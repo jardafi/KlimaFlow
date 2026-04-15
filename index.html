@@ -1,0 +1,2169 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KlimaFlow — Klimatizace jako předplatné</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --orange:  #FF6B35;
+      --orange-dark: #E85520;
+      --teal-deep: #0F292F;
+      --teal-mid:  #1A3D46;
+      --teal-bright: #14A098;
+      --teal-bright-dark: #0D7A73;
+      --slate: #546E7A;
+      --bg: #F5F7F8;
+      --surface: #FFFFFF;
+      --border: #D8E0E3;
+      --shadow-hard: 4px 4px 0px #0F292F;
+      --shadow-hard-sm: 3px 3px 0px #0F292F;
+      --shadow-teal: 4px 4px 0px #14A098;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      color: var(--teal-deep);
+      background-color: var(--bg);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, h5, .heading {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+    }
+
+    /* ─── GRID TEXTURE ─── */
+    .grid-texture {
+      background-image:
+        linear-gradient(rgba(20,160,152,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(20,160,152,0.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .grid-texture-dark {
+      background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* ─── NOISE OVERLAY ─── */
+    .noise::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ─── BUTTONS ─── */
+    .btn-primary {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: var(--orange);
+      color: white;
+      border: 2px solid var(--teal-deep);
+      border-radius: 2px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.12s cubic-bezier(0.34,1.56,0.64,1), background 0.12s ease;
+      position: relative;
+    }
+    .btn-primary:hover {
+      background: var(--orange-dark);
+      transform: translate(-1px, -1px);
+    }
+    .btn-primary:active {
+      transform: translate(1px, 1px);
+    }
+    .btn-primary:focus-visible {
+      outline: 3px solid var(--teal-bright);
+      outline-offset: 3px;
+    }
+
+    .btn-secondary {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: transparent;
+      color: var(--teal-deep);
+      border: 2px solid var(--teal-deep);
+      border-radius: 2px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.12s cubic-bezier(0.34,1.56,0.64,1), background 0.12s ease, color 0.12s ease;
+    }
+    .btn-secondary:hover {
+      background: var(--teal-deep);
+      color: white;
+      transform: translate(-1px, -1px);
+    }
+    .btn-secondary:active {
+      transform: translate(1px, 1px);
+    }
+    .btn-secondary:focus-visible {
+      outline: 3px solid var(--teal-bright);
+      outline-offset: 3px;
+    }
+
+    .btn-outline-white {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: transparent;
+      color: white;
+      border: 2px solid rgba(255,255,255,0.6);
+      border-radius: 2px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn-outline-white:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: white;
+    }
+    .btn-outline-white:focus-visible {
+      outline: 3px solid var(--teal-bright);
+      outline-offset: 3px;
+    }
+
+    /* ─── CARD ─── */
+    .card {
+      background: var(--surface);
+      border: 2px solid var(--teal-deep);
+      border-radius: 2px;
+      box-shadow: var(--shadow-hard);
+      transition: transform 0.15s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.15s ease;
+    }
+    .card:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 7px 7px 0px var(--teal-deep);
+    }
+    .card-teal {
+      background: var(--teal-bright);
+      border: 2px solid var(--teal-deep);
+      border-radius: 2px;
+      box-shadow: var(--shadow-hard);
+    }
+    .card-orange {
+      background: var(--orange);
+      border: 2px solid var(--teal-deep);
+      border-radius: 2px;
+      box-shadow: var(--shadow-hard);
+    }
+    .card-dark {
+      background: var(--teal-deep);
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 2px;
+      box-shadow: 4px 4px 0px rgba(20,160,152,0.5);
+    }
+
+    /* ─── TAG BADGE ─── */
+    .tag {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      display: inline-block;
+      padding: 4px 10px;
+      border: 1.5px solid currentColor;
+      border-radius: 2px;
+    }
+
+    /* ─── NAV ─── */
+    .nav-link {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--slate);
+      text-decoration: none;
+      transition: color 0.15s ease;
+      position: relative;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--orange);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.2s ease;
+    }
+    .nav-link:hover {
+      color: var(--teal-deep);
+    }
+    .nav-link:hover::after {
+      transform: scaleX(1);
+    }
+
+    /* ─── STAT ─── */
+    .stat-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(36px, 5vw, 56px);
+      letter-spacing: -0.04em;
+      color: var(--orange);
+    }
+
+    /* ─── SECTION LABEL ─── */
+    .section-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--teal-bright);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-label::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--teal-bright);
+    }
+
+    /* ─── STEP NUMBER ─── */
+    .step-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 64px;
+      letter-spacing: -0.05em;
+      color: var(--teal-bright);
+      opacity: 0.15;
+      line-height: 1;
+      user-select: none;
+    }
+
+    /* ─── DIVIDER ─── */
+    .divider {
+      height: 2px;
+      background: var(--teal-deep);
+    }
+
+    /* ─── CHECKMARK ─── */
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .check-item::before {
+      content: '';
+      display: block;
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      background: var(--teal-bright);
+      border: 2px solid var(--teal-deep);
+      border-radius: 2px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3E%3Cpath fill-rule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clip-rule='evenodd'/%3E%3C/svg%3E");
+      background-size: 14px;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    /* ─── FAQ ─── */
+    .faq-item {
+      border: 2px solid var(--teal-deep);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .faq-question {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: 16px;
+      padding: 20px 24px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      background: var(--surface);
+      transition: background 0.15s ease;
+      user-select: none;
+    }
+    .faq-question:hover { background: #F0F4F5; }
+    .faq-icon {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--teal-deep);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 400;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      background: #F8FAFA;
+      border-top: 0px solid var(--teal-deep);
+    }
+    .faq-answer.open {
+      max-height: 500px;
+      border-top-width: 2px;
+    }
+    .faq-answer-inner {
+      padding: 20px 24px;
+      color: var(--slate);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    /* ─── PRICING CARD ─── */
+    .pricing-card {
+      background: var(--surface);
+      border: 2px solid var(--teal-deep);
+      border-radius: 2px;
+      position: relative;
+      transition: transform 0.15s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.15s ease;
+    }
+    .pricing-card:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 7px 7px 0px var(--teal-deep);
+    }
+    .pricing-card.featured {
+      background: var(--teal-deep);
+      color: white;
+    }
+
+    /* ─── REVEAL ANIMATIONS ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes slideRight {
+      from { opacity: 0; transform: translateX(-16px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .animate-fade-up {
+      animation: fadeUp 0.6s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease both;
+    }
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+    .delay-400 { animation-delay: 0.4s; }
+    .delay-500 { animation-delay: 0.5s; }
+    .delay-600 { animation-delay: 0.6s; }
+
+    /* ─── HERO ILLUSTRATION ─── */
+    @keyframes breathe {
+      0%, 100% { transform: scale(1) translateY(0); }
+      50% { transform: scale(1.02) translateY(-6px); }
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 0.6; }
+      70% { transform: scale(1.05); opacity: 0; }
+      100% { transform: scale(1.05); opacity: 0; }
+    }
+    @keyframes thermometer {
+      0%, 100% { height: 45%; }
+      50% { height: 72%; }
+    }
+    .ac-unit-animate { animation: breathe 4s ease-in-out infinite; }
+    .pulse-ring { animation: pulse-ring 2.5s ease-out infinite; }
+
+    /* airflow CSS removed — replaced by canvas particle system */
+
+    /* ─── LANGUAGE SWITCH ─── */
+    .lang-switch {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      padding: 7px 13px;
+      border: 2px solid var(--border);
+      background: transparent;
+      color: var(--slate);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .lang-switch:first-child { border-radius: 2px 0 0 2px; }
+    .lang-switch:last-child  { border-radius: 0 2px 2px 0; border-left: none; }
+    .lang-switch.active      { background: var(--teal-deep); color: white; border-color: var(--teal-deep); }
+    .lang-switch:not(.active):hover { background: var(--bg); }
+
+    /* ─── MOBILE NAV ─── */
+    #mobile-menu { display: none; }
+    #mobile-menu.open { display: flex; }
+
+    /* ─── TICKER TAPE ─── */
+    @keyframes ticker {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .ticker-track { animation: ticker 24s linear infinite; }
+    .ticker-track:hover { animation-play-state: paused; }
+
+    /* ─── SEGMENT ICON ─── */
+    .segment-card {
+      background: var(--surface);
+      border: 2px solid var(--teal-deep);
+      border-radius: 2px;
+      box-shadow: var(--shadow-hard);
+      padding: 32px 28px;
+      transition: transform 0.15s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.15s ease;
+      cursor: default;
+    }
+    .segment-card:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 7px 7px 0px var(--teal-deep);
+    }
+    .segment-icon {
+      width: 52px;
+      height: 52px;
+      border: 2px solid var(--teal-deep);
+      border-radius: 2px;
+      background: var(--teal-bright);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 3px 3px 0px var(--teal-deep);
+      flex-shrink: 0;
+    }
+
+    /* ─── SCROLL REVEAL ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22,1,0.36,1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ─── INPUT ─── */
+    input[type="text"], input[type="email"], select, textarea {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      padding: 12px 16px;
+      border: 2px solid var(--teal-deep);
+      border-radius: 2px;
+      background: white;
+      width: 100%;
+      color: var(--teal-deep);
+      outline: none;
+      transition: box-shadow 0.15s ease;
+    }
+    input[type="text"]:focus, input[type="email"]:focus, select:focus, textarea:focus {
+      box-shadow: 3px 3px 0px var(--teal-bright);
+    }
+
+    /* ─── ORANGE ACCENT LINE ─── */
+    .accent-line {
+      display: inline-block;
+      position: relative;
+    }
+    .accent-line::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--orange);
+      z-index: -1;
+    }
+
+    /* ─── LOGO SVG INLINE ─── */
+    .logo-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--orange);
+      border: 2px solid var(--teal-deep);
+      border-radius: 2px;
+      box-shadow: 2px 2px 0px var(--teal-deep);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .logo-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 22px;
+      letter-spacing: -0.03em;
+      color: var(--teal-deep);
+    }
+
+    /* ─── STICKY NAV SHADOW ─── */
+    .nav-scrolled {
+      box-shadow: 0 2px 0 var(--teal-deep);
+    }
+
+    /* ─── PROCESS CONNECTOR ─── */
+    .step-connector {
+      position: absolute;
+      top: 40px;
+      right: -50%;
+      width: 100%;
+      height: 2px;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--teal-bright) 0, var(--teal-bright) 8px,
+        transparent 8px, transparent 16px
+      );
+    }
+
+    /* ─── CUSTOM SCROLL ─── */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--teal-deep); border-radius: 0; }
+
+    /* ─── RESPONSIVE BREAKPOINTS ─── */
+    @media (max-width: 768px) {
+      /* About section stacks on mobile */
+      #about-section { grid-template-columns: 1fr !important; }
+      #about-photo { min-height: 320px !important; }
+      #about-text { padding: 48px 32px !important; }
+      /* Hero stacks */
+      #hero-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+      /* Segment cards: 1 col on mobile */
+      #segments-grid { grid-template-columns: 1fr !important; }
+      /* Benefits: 1 col */
+      #benefits-grid { grid-template-columns: 1fr !important; }
+      /* Stats: 2 col */
+      #stats-grid { grid-template-columns: 1fr 1fr !important; }
+      /* Pricing: 1 col */
+      #pricing-grid { grid-template-columns: 1fr !important; }
+      /* Steps: 1 col */
+      #steps-grid { grid-template-columns: 1fr !important; }
+      /* Contact: 1 col */
+      #contact-grid { grid-template-columns: 1fr !important; gap: 48px !important; }
+      /* Footer: 2 col */
+      #footer-grid { grid-template-columns: 1fr 1fr !important; gap: 32px !important; }
+    }
+    @media (max-width: 480px) {
+      #stats-grid { grid-template-columns: 1fr 1fr !important; }
+      #footer-grid { grid-template-columns: 1fr !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     NAVIGATION
+══════════════════════════════ -->
+<nav id="navbar" style="
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: white;
+  border-bottom: 2px solid var(--teal-deep);
+  transition: box-shadow 0.2s ease;
+">
+  <div style="max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 24px;">
+
+    <!-- Logo -->
+    <a href="#" style="text-decoration:none; display:inline-flex; align-items:center;">
+      <svg viewBox="0 0 182 46" width="182" height="46" xmlns="http://www.w3.org/2000/svg">
+        <text x="0" y="30" font-family="'Outfit',sans-serif" font-weight="700" font-size="27" fill="#0F292F" letter-spacing="-0.5">Klima</text>
+        <circle cx="75" cy="13" r="4" stroke="#FF6B35" stroke-width="1.8" fill="none"/>
+        <text x="82" y="30" font-family="'Outfit',sans-serif" font-weight="300" font-size="27" fill="#C2CCCD" letter-spacing="-0.5">Flow</text>
+        <text x="0" y="44" font-family="'Space Grotesk',sans-serif" font-weight="600" font-size="8.5" fill="#546E7A" textLength="182" lengthAdjust="spacing">KLIMATIZACE NA PŘEDPLATNÉ</text>
+      </svg>
+    </a>
+
+    <!-- Desktop links -->
+    <div style="display: flex; align-items: center; gap: 32px;" class="desktop-nav">
+      <a href="#jak-to-funguje" class="nav-link" data-i18n="nav_how">Jak to funguje</a>
+      <a href="#pro-koho" class="nav-link" data-i18n="nav_for_whom">Pro koho</a>
+      <a href="#vyhody" class="nav-link" data-i18n="nav_benefits">Výhody</a>
+      <a href="#kalkulacka" class="nav-link" data-i18n="nav_calc">Kalkulačka</a>
+      <a href="#faq" class="nav-link">FAQ</a>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <!-- Language toggle -->
+      <div style="display:flex;gap:0;" title="Jazyk / Jazyk">
+        <button id="lang-cz-btn" onclick="setPageLang('cz')" class="lang-switch active">CZ</button>
+        <button id="lang-sk-btn" onclick="setPageLang('sk')" class="lang-switch">SK</button>
+      </div>
+      <a href="#kontakt" class="btn-primary" style="padding: 10px 20px; font-size: 13px;" data-i18n="nav_cta">
+        Nezávazná poptávka
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════
+     HERO
+══════════════════════════════ -->
+<section style="
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+  min-height: calc(100vh - 68px);
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid var(--border);
+" class="grid-texture">
+
+  <!-- Teal radial glow top-right -->
+  <div style="
+    position: absolute; top: -120px; right: -120px;
+    width: 560px; height: 560px;
+    background: radial-gradient(circle, rgba(20,160,152,0.12) 0%, transparent 68%);
+    pointer-events: none;
+  "></div>
+  <!-- Orange glow bottom-left -->
+  <div style="
+    position: absolute; bottom: -80px; left: -80px;
+    width: 420px; height: 420px;
+    background: radial-gradient(circle, rgba(255,107,53,0.09) 0%, transparent 68%);
+    pointer-events: none;
+  "></div>
+
+  <!-- Decorative teal vertical bar far left -->
+  <div style="
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 4px; background: var(--teal-bright);
+    pointer-events: none;
+  "></div>
+
+  <div style="max-width: 1200px; margin: 0 auto; padding: 40px 24px 80px; position: relative; z-index: 2; width: 100%;">
+    <div id="hero-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;">
+
+      <!-- Left: Copy -->
+      <div>
+        <h1 class="animate-fade-up delay-100" style="
+          font-size: clamp(40px, 5vw, 64px);
+          color: var(--teal-deep);
+          margin-bottom: 24px;
+          max-width: 580px;
+        ">
+          <span data-i18n="hero_h1_top">Klimatizace</span><br/>
+          <span style="color: var(--orange);" data-i18n="hero_h1_accent">bez investice.</span><br/>
+          <span data-i18n="hero_h1_bot">Jen měsíční<br/>předplatné.</span>
+        </h1>
+
+        <p class="animate-fade-up delay-200" style="
+          color: var(--slate);
+          font-size: 18px;
+          line-height: 1.7;
+          max-width: 460px;
+          margin-bottom: 40px;
+        " data-i18n="hero_sub">
+          Moderní klimatizační systémy pro SVJ, bytová
+          družstva, developery a kancelářské prostory.
+          Servis v ceně, bez skrytých poplatků.
+        </p>
+
+        <div class="animate-fade-up delay-300" style="display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 48px;">
+          <a href="#kontakt" class="btn-primary" style="font-size: 15px;" data-i18n="hero_cta1">
+            Získat nezávaznou nabídku
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#jak-to-funguje" class="btn-secondary" style="font-size: 15px;" data-i18n="hero_cta2">
+            Jak to funguje
+          </a>
+        </div>
+
+        <!-- Trust signals -->
+        <div class="animate-fade-up delay-400" style="display: flex; flex-wrap: wrap; gap: 24px;">
+          <div style="display: flex; align-items: center; gap: 8px; color: var(--slate); font-size: 13px;">
+            <div style="width: 6px; height: 6px; background: var(--teal-bright); border-radius: 50%;"></div>
+            <span data-i18n="trust_1">Bez vstupní investice</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; color: var(--slate); font-size: 13px;">
+            <div style="width: 6px; height: 6px; background: var(--teal-bright); border-radius: 50%;"></div>
+            <span data-i18n="trust_2">Servis &amp; údržba v ceně</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; color: var(--slate); font-size: 13px;">
+            <div style="width: 6px; height: 6px; background: var(--teal-bright); border-radius: 50%;"></div>
+            <span data-i18n="trust_3">Smlouva bez skrytých poplatků</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Hero photo with airflow animation -->
+      <!-- ★ Save your photo as ./img/hero-room.jpg — the onerror fallback is for development only ★ -->
+      <div id="hero-photo-wrap" class="animate-fade-up delay-200" style="position:relative; border-radius:2px; overflow:hidden; box-shadow:8px 8px 0 var(--teal-deep); border:2px solid var(--teal-deep);">
+        <img
+          src="./brand_assets/hero.png"
+          alt="Příjemný interiér s klimatizací KlimaFlow"
+          style="width:100%; display:block; object-fit:cover; height:clamp(380px,45vw,540px);"
+        />
+        <!-- Subtle gradient overlay at bottom for text legibility -->
+        <div style="position:absolute;bottom:0;left:0;right:0;height:120px;background:linear-gradient(to top,rgba(15,41,47,0.18),transparent);pointer-events:none;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     TICKER TAPE
+══════════════════════════════ -->
+<div style="
+  background: var(--orange);
+  border-top: 2px solid var(--teal-deep);
+  border-bottom: 2px solid var(--teal-deep);
+  overflow: hidden;
+  padding: 12px 0;
+">
+  <div class="ticker-track" style="display: flex; gap: 0; white-space: nowrap; width: max-content;">
+    <!-- Repeated twice for seamless loop -->
+    <span style="display: flex; gap: 0;">
+      <span style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: white; padding: 0 32px;">✦ Nulová počáteční investice</span>
+      <span style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.6); padding: 0 32px;">✦ Instalace v ceně</span>
+      <span style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: white; padding: 0 32px;">✦ Servis a údržba v ceně předplatného</span>
+      <span style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.6); padding: 0 32px;">✦ Moderní inverterové systémy</span>
+      <span style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: white; padding: 0 32px;">✦ Česká republika &amp; Slovensko</span>
+      <span style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.6); padding: 0 32px;">✦ Pro SVJ, bytová družstva &amp; kanceláře</span>
+    </span>
+    <span style="display: flex; gap: 0;" aria-hidden="true">
+      <span style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: white; padding: 0 32px;">✦ Nulová počáteční investice</span>
+      <span style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.6); padding: 0 32px;">✦ Instalace v ceně</span>
+      <span style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: white; padding: 0 32px;">✦ Servis a údržba v ceně předplatného</span>
+      <span style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.6); padding: 0 32px;">✦ Moderní inverterové systémy</span>
+      <span style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: white; padding: 0 32px;">✦ Česká republika &amp; Slovensko</span>
+      <span style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.6); padding: 0 32px;">✦ Pro SVJ, bytová družstva &amp; kanceláře</span>
+    </span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     ABOUT / MODERN STANDARD
+══════════════════════════════ -->
+<section id="about-section" style="padding: 100px 24px; background: var(--surface); border-bottom: 2px solid var(--border);">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;">
+
+      <!-- Left: Photo with brand treatment -->
+      <div id="about-photo" style="position:relative;">
+        <img
+          src="./brand_assets/hero.png"
+          onerror="this.onerror=null;this.src='https://placehold.co/560x480/0F292F/14A098?text=KlimaFlow'"
+          alt="Klimatizace bez investice — KlimaFlow"
+          style="width:100%;display:block;object-fit:cover;border:2px solid var(--teal-deep);border-radius:2px;box-shadow:8px 8px 0 var(--teal-deep);"
+        />
+        <!-- Teal accent bar left -->
+        <div style="position:absolute;top:16px;left:-12px;width:4px;height:60%;background:var(--teal-bright);"></div>
+        <!-- Stats chip -->
+        <div style="position:absolute;bottom:-20px;right:-16px;background:var(--orange);border:2px solid var(--teal-deep);border-radius:2px;box-shadow:4px 4px 0 var(--teal-deep);padding:14px 22px;text-align:center;">
+          <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.75);margin-bottom:2px;" data-i18n="badge_sub">PŘEDPLATNÉ</div>
+          <div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:22px;color:white;letter-spacing:-0.02em;" data-i18n="badge_price">od 890 Kč/měs</div>
+        </div>
+      </div>
+
+      <!-- Right: Text content -->
+      <div id="about-text">
+        <div style="margin-bottom:16px;">
+          <span class="section-label" data-i18n="about_label">O řešení</span>
+        </div>
+
+        <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(28px,3vw,44px);line-height:1.15;letter-spacing:-0.03em;color:var(--teal-deep);margin-bottom:20px;">
+          <span data-i18n="about_h2_top">Nový standard pro</span><br/>
+          <span style="color:var(--orange);" data-i18n="about_h2_accent">klimatizaci budov.</span>
+        </h2>
+
+        <p style="color:var(--slate);font-size:16px;line-height:1.75;max-width:440px;margin-bottom:40px;" data-i18n="about_sub">
+          Vyvinuli jsme řešení, které odděluje vysokovýkonné klimatizování od kapitálového rizika. Vlastníme celý životní cyklus zařízení — vy jen platíte fixní předplatné a užíváte si pohodlí.
+        </p>
+
+        <!-- Feature 1 -->
+        <div style="display:flex;gap:18px;margin-bottom:24px;align-items:flex-start;padding:18px 20px;background:var(--bg);border:1.5px solid var(--border);border-radius:2px;">
+          <div style="width:40px;height:40px;background:var(--orange);border:2px solid var(--teal-deep);border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:2px 2px 0 var(--teal-deep);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+          </div>
+          <div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;margin-bottom:4px;" data-i18n="about_f1_title">Ochrana kapitálu</div>
+            <p style="color:var(--slate);font-size:13px;line-height:1.6;margin:0;" data-i18n="about_f1_body">Přesměrujte kapitál od odepisujícího vybavení k rozvoji klíčových aktivit a inovacím.</p>
+          </div>
+        </div>
+
+        <!-- Feature 2 -->
+        <div style="display:flex;gap:18px;margin-bottom:24px;align-items:flex-start;padding:18px 20px;background:var(--bg);border:1.5px solid var(--border);border-radius:2px;">
+          <div style="width:40px;height:40px;background:var(--teal-bright);border:2px solid var(--teal-deep);border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:2px 2px 0 var(--teal-deep);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;margin-bottom:4px;" data-i18n="about_f2_title">Výkon jako služba</div>
+            <p style="color:var(--slate);font-size:13px;line-height:1.6;margin:0;" data-i18n="about_f2_body">Měsíční předplatné zahrnuje veškerou údržbu, opravy a inovace — bez nečekaných nákladů.</p>
+          </div>
+        </div>
+
+        <!-- Feature 3 -->
+        <div style="display:flex;gap:18px;align-items:flex-start;padding:18px 20px;background:var(--bg);border:1.5px solid var(--border);border-radius:2px;">
+          <div style="width:40px;height:40px;background:var(--teal-mid);border:2px solid var(--teal-deep);border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:2px 2px 0 var(--teal-deep);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;margin-bottom:4px;" data-i18n="about_f3_title">Předvídatelné náklady</div>
+            <p style="color:var(--slate);font-size:13px;line-height:1.6;margin:0;" data-i18n="about_f3_body">Fixní měsíční platba bez skrytých poplatků — od instalace po výměnu zařízení.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     STATS
+══════════════════════════════ -->
+<section style="background: var(--surface); border-bottom: 2px solid var(--border); padding: 64px 24px;">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div id="stats-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;">
+
+      <div class="reveal" style="text-align: center; padding: 32px 16px; border-right: 2px solid var(--border);">
+        <div class="stat-number">0 Kč</div>
+        <div style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 14px; color: var(--slate); margin-top: 6px; letter-spacing: 0.3px;" data-i18n="stat1_label">vstupní investice</div>
+      </div>
+
+      <div class="reveal reveal-delay-1" style="text-align: center; padding: 32px 16px; border-right: 2px solid var(--border);">
+        <div class="stat-number">48h</div>
+        <div style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 14px; color: var(--slate); margin-top: 6px; letter-spacing: 0.3px;" data-i18n="stat2_label">čas instalace</div>
+      </div>
+
+      <div class="reveal reveal-delay-2" style="text-align: center; padding: 32px 16px; border-right: 2px solid var(--border);">
+        <div class="stat-number">100%</div>
+        <div style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 14px; color: var(--slate); margin-top: 6px; letter-spacing: 0.3px;" data-i18n="stat3_label">servis v ceně</div>
+      </div>
+
+      <div class="reveal reveal-delay-3" style="text-align: center; padding: 32px 16px;">
+        <div class="stat-number">5★</div>
+        <div style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 14px; color: var(--slate); margin-top: 6px; letter-spacing: 0.3px;" data-i18n="stat4_label">garance kvality</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     HOW IT WORKS
+══════════════════════════════ -->
+<section id="jak-to-funguje" style="padding: 100px 24px; background: var(--bg);">
+  <div style="max-width: 1200px; margin: 0 auto;">
+
+    <div class="reveal" style="margin-bottom: 16px;">
+      <span class="section-label" data-i18n="how_label">Jak to funguje</span>
+    </div>
+    <h2 class="reveal" style="font-size: clamp(32px, 4vw, 48px); margin-bottom: 16px; max-width: 560px;" data-i18n="how_h2">
+      Tři kroky k chladu bez komplikací
+    </h2>
+    <p class="reveal" style="color: var(--slate); font-size: 17px; max-width: 500px; margin-bottom: 72px;" data-i18n="how_sub">
+      Celý proces od poptávky po spuštění zvládneme za méně než týden.
+    </p>
+
+    <div id="steps-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;">
+
+      <!-- Step 1 -->
+      <div class="segment-card reveal" style="position: relative;">
+        <div class="step-number" style="position: absolute; top: 16px; right: 20px;">01</div>
+        <div class="segment-icon" style="margin-bottom: 24px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <path d="M8 21h8M12 17v4"/>
+          </svg>
+        </div>
+        <div style="font-family: 'Space Grotesk'; font-weight: 700; font-size: 20px; margin-bottom: 12px; position: relative; z-index: 1;" data-i18n="step1_title">
+          Zvolíte plán
+        </div>
+        <p style="color: var(--slate); font-size: 15px; line-height: 1.65; position: relative; z-index: 1;" data-i18n="step1_body">
+          Vyplníte nezávazný formulář. Sdělíte nám počet místností,
+          typ objektu a požadovaný výkon. Zdarma vypracujeme
+          technické řešení na míru.
+        </p>
+        <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid var(--border); position: relative; z-index: 1;">
+          <span class="tag" style="color: var(--teal-bright); border-color: var(--teal-bright);" data-i18n="step1_tag">Zdarma &amp; nezávazně</span>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="segment-card reveal reveal-delay-1" style="position: relative;">
+        <div class="step-number" style="position: absolute; top: 16px; right: 20px;">02</div>
+        <div class="segment-icon" style="margin-bottom: 24px; background: var(--orange);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>
+          </svg>
+        </div>
+        <div style="font-family: 'Space Grotesk'; font-weight: 700; font-size: 20px; margin-bottom: 12px; position: relative; z-index: 1;" data-i18n="step2_title">
+          Instalace v ceně
+        </div>
+        <p style="color: var(--slate); font-size: 15px; line-height: 1.65; position: relative; z-index: 1;" data-i18n="step2_body">
+          Naši certifikovaní technici vše nainstalují na naše náklady
+          do 48 hodin. Vnitřní i vnější jednotky, elektroinstalace,
+          kabeláž — vše bez starostí.
+        </p>
+        <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid var(--border); position: relative; z-index: 1;">
+          <span class="tag" style="color: var(--orange); border-color: var(--orange);" data-i18n="step2_tag">Bez skryté ceny</span>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="segment-card reveal reveal-delay-2" style="position: relative;">
+        <div class="step-number" style="position: absolute; top: 16px; right: 20px;">03</div>
+        <div class="segment-icon" style="margin-bottom: 24px; background: var(--teal-mid);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+          </svg>
+        </div>
+        <div style="font-family: 'Space Grotesk'; font-weight: 700; font-size: 20px; margin-bottom: 12px; position: relative; z-index: 1;" data-i18n="step3_title">
+          Platíte měsíčně
+        </div>
+        <p style="color: var(--slate); font-size: 15px; line-height: 1.65; position: relative; z-index: 1;" data-i18n="step3_body">
+          Fixní měsíční splátka zahrnuje hardware, servis, pravidelnou
+          údržbu i technickou podporu. Žádné překvapení, žádné
+          dodatečné náklady.
+        </p>
+        <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid var(--border); position: relative; z-index: 1;">
+          <span class="tag" style="color: var(--teal-deep); border-color: var(--teal-deep);" data-i18n="step3_tag">Vše v jedné platbě</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     FOR WHOM (SEGMENTS)
+══════════════════════════════ -->
+<section id="pro-koho" style="padding: 100px 24px; background: var(--teal-bright); position: relative; overflow: hidden;">
+
+  <!-- Subtle grid texture -->
+  <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.06) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;"></div>
+
+  <div style="max-width: 1200px; margin: 0 auto; position: relative; z-index: 2;">
+
+    <div class="reveal" style="margin-bottom: 16px;">
+      <span class="section-label" style="color: white;" data-i18n="seg_label">Pro koho to je</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px;margin-bottom:56px;">
+      <h2 class="reveal" style="font-size: clamp(32px, 4vw, 48px); color: white; margin:0; max-width: 560px;" data-i18n="seg_h2">
+        Řešení šité na míru každému segmentu
+      </h2>
+      <p class="reveal" style="color: rgba(255,255,255,0.85); font-size: 16px; max-width: 360px; margin:0;" data-i18n="seg_sub">
+        Ať spravujete bytový dům, plánujete developerský projekt nebo provozujete kancelář — máme správné řešení.
+      </p>
+    </div>
+
+    <div id="segments-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+
+      <!-- SVJ -->
+      <a href="svj.html" class="seg-card reveal" style="
+        display:block; text-decoration:none; color:inherit;
+        background: white; border: 2px solid var(--teal-deep);
+        border-radius: 2px; box-shadow: 4px 4px 0px var(--teal-deep);
+        padding: 36px 32px; position: relative; overflow: hidden;
+        transition: transform 0.15s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.15s ease;
+        cursor: pointer;
+      " onmouseover="this.style.transform='translate(-3px,-3px)';this.style.boxShadow='7px 7px 0px #0F292F'" onmouseout="this.style.transform='';this.style.boxShadow='4px 4px 0px #0F292F'">
+        <div style="display: flex; align-items: flex-start; gap: 18px; margin-bottom: 20px;">
+          <div style="width:52px;height:52px;flex-shrink:0;background:var(--teal-deep);border:2px solid var(--teal-deep);border-radius:2px;display:flex;align-items:center;justify-content:center;">
+            <!-- House icon — SVJ = home ownership -->
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </div>
+          <div>
+            <div class="tag" style="color:var(--teal-bright);border-color:var(--teal-bright);margin-bottom:8px;">SVJ</div>
+            <h3 style="color:var(--teal-deep);font-size:21px;margin:0;font-family:'Space Grotesk',sans-serif;font-weight:700;" data-i18n="seg_svj_title">Společenství vlastníků</h3>
+          </div>
+        </div>
+        <p style="color:var(--slate);font-size:14px;line-height:1.7;margin-bottom:20px;">
+          Klimatizace pro bytové domy bez nutnosti hlasování o investici. Společné nebo individuální předplatné pro každý byt.
+        </p>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;">
+          <div class="check-item" style="color:var(--teal-deep);font-size:13px;">Předplatné pro celý dům nebo po bytech</div>
+          <div class="check-item" style="color:var(--teal-deep);font-size:13px;">Servis koordinuje KlimaFlow, ne výbor</div>
+          <div class="check-item" style="color:var(--teal-deep);font-size:13px;">Jednotná smlouva pro všechny vlastníky</div>
+        </div>
+        <div style="display:inline-flex;align-items:center;gap:6px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12px;letter-spacing:0.5px;text-transform:uppercase;color:var(--teal-bright);">
+          <span data-i18n="seg_more">Zjistit více</span> <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </a>
+
+      <!-- Bytová Družstva -->
+      <a href="bytova-druzstva.html" class="seg-card reveal reveal-delay-1" style="
+        display:block; text-decoration:none; color:inherit;
+        background: white; border: 2px solid var(--teal-deep);
+        border-radius: 2px; box-shadow: 4px 4px 0px var(--teal-deep);
+        padding: 36px 32px; position: relative; overflow: hidden;
+        transition: transform 0.15s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.15s ease;
+        cursor: pointer;
+      " onmouseover="this.style.transform='translate(-3px,-3px)';this.style.boxShadow='7px 7px 0px #0F292F'" onmouseout="this.style.transform='';this.style.boxShadow='4px 4px 0px #0F292F'">
+        <div style="display: flex; align-items: flex-start; gap: 18px; margin-bottom: 20px;">
+          <div style="width:52px;height:52px;flex-shrink:0;background:var(--orange);border:2px solid var(--teal-deep);border-radius:2px;display:flex;align-items:center;justify-content:center;">
+            <!-- Building icon — BD = multi-unit housing management -->
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 21h18M9 21V7l6-4v18M3 21V11l6-4"/>
+              <path d="M12 7v2m0 4v2m0 4v2M9 11h.01M9 15h.01"/>
+            </svg>
+          </div>
+          <div>
+            <div class="tag" style="color:var(--orange);border-color:var(--orange);margin-bottom:8px;">BD</div>
+            <h3 style="color:var(--teal-deep);font-size:21px;margin:0;font-family:'Space Grotesk',sans-serif;font-weight:700;" data-i18n="seg_bd_title">Bytová družstva</h3>
+          </div>
+        </div>
+        <p style="color:var(--slate);font-size:14px;line-height:1.7;margin-bottom:20px;">
+          Správci bytových domů oceňují prediktabilní náklady a nulové starosti se servisem za pevný měsíční poplatek.
+        </p>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;">
+          <div class="check-item" style="color:var(--teal-deep);font-size:13px;">Centralizovaná správa více objektů</div>
+          <div class="check-item" style="color:var(--teal-deep);font-size:13px;">Reporty o spotřebě a stavu zařízení</div>
+          <div class="check-item" style="color:var(--teal-deep);font-size:13px;">Fakturace na družstvo nebo nájemníky</div>
+        </div>
+        <div style="display:inline-flex;align-items:center;gap:6px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12px;letter-spacing:0.5px;text-transform:uppercase;color:var(--orange);">
+          <span data-i18n="seg_more">Zjistit více</span> <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </a>
+
+      <!-- Developeři -->
+      <a href="developeri.html" class="seg-card reveal reveal-delay-2" style="
+        display:block; text-decoration:none; color:inherit;
+        background: white; border: 2px solid var(--teal-deep);
+        border-radius: 2px; box-shadow: 4px 4px 0px var(--teal-deep);
+        padding: 36px 32px; position: relative; overflow: hidden;
+        transition: transform 0.15s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.15s ease;
+        cursor: pointer;
+      " onmouseover="this.style.transform='translate(-3px,-3px)';this.style.boxShadow='7px 7px 0px #0F292F'" onmouseout="this.style.transform='';this.style.boxShadow='4px 4px 0px #0F292F'">
+        <div style="display: flex; align-items: flex-start; gap: 18px; margin-bottom: 20px;">
+          <div style="width:52px;height:52px;flex-shrink:0;background:var(--teal-mid);border:2px solid var(--teal-deep);border-radius:2px;display:flex;align-items:center;justify-content:center;">
+            <!-- Blueprint/grid icon — Developer = project planning -->
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+            </svg>
+          </div>
+          <div>
+            <div class="tag" style="color:var(--teal-mid);border-color:var(--teal-mid);margin-bottom:8px;">Developer</div>
+            <h3 style="color:var(--teal-deep);font-size:21px;margin:0;font-family:'Space Grotesk',sans-serif;font-weight:700;" data-i18n="seg_dev_title">Developeři</h3>
+          </div>
+        </div>
+        <p style="color:var(--slate);font-size:14px;line-height:1.7;margin-bottom:20px;">
+          Nabídněte budoucím vlastníkům klimatizaci jako součást vybavení. Clima přebírá odpovědnost od kolaudace.
+        </p>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;">
+          <div class="check-item" style="color:var(--teal-deep);font-size:13px;">Klimatizace jako prodejní argument</div>
+          <div class="check-item" style="color:var(--teal-deep);font-size:13px;">Koordinace s projektem stavby</div>
+          <div class="check-item" style="color:var(--teal-deep);font-size:13px;">Předplatné přechází na kupující</div>
+        </div>
+        <div style="display:inline-flex;align-items:center;gap:6px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12px;letter-spacing:0.5px;text-transform:uppercase;color:var(--teal-mid);">
+          <span data-i18n="seg_more">Zjistit více</span> <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </a>
+
+      <!-- Kanceláře -->
+      <a href="kancelare.html" class="seg-card reveal reveal-delay-3" style="
+        display:block; text-decoration:none; color:inherit;
+        background: white; border: 2px solid var(--teal-deep);
+        border-radius: 2px; box-shadow: 4px 4px 0px var(--teal-deep);
+        padding: 36px 32px; position: relative; overflow: hidden;
+        transition: transform 0.15s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.15s ease;
+        cursor: pointer;
+      " onmouseover="this.style.transform='translate(-3px,-3px)';this.style.boxShadow='7px 7px 0px #0F292F'" onmouseout="this.style.transform='';this.style.boxShadow='4px 4px 0px #0F292F'">
+        <div style="display: flex; align-items: flex-start; gap: 18px; margin-bottom: 20px;">
+          <div style="width:52px;height:52px;flex-shrink:0;background:var(--teal-bright);border:2px solid var(--teal-deep);border-radius:2px;display:flex;align-items:center;justify-content:center;">
+            <!-- Briefcase icon — Office = professional workspace -->
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2"/>
+              <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
+              <line x1="12" y1="12" x2="12" y2="12"/><path d="M2 12h20"/>
+            </svg>
+          </div>
+          <div>
+            <div class="tag" style="color:var(--teal-bright);border-color:var(--teal-bright);margin-bottom:8px;">Office</div>
+            <h3 style="color:var(--teal-deep);font-size:21px;margin:0;font-family:'Space Grotesk',sans-serif;font-weight:700;" data-i18n="seg_off_title">Kancelářské prostory</h3>
+          </div>
+        </div>
+        <p style="color:var(--slate);font-size:14px;line-height:1.7;margin-bottom:20px;">
+          Klimatizace jako provozní náklad — odepisovatelná, předvídatelná, bez nečekaných oprav a bez kapexu.
+        </p>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;">
+          <div class="check-item" style="color:var(--teal-deep);font-size:13px;">Opex místo capex — daňově výhodné</div>
+          <div class="check-item" style="color:var(--teal-deep);font-size:13px;">Rychlá instalace bez přerušení provozu</div>
+          <div class="check-item" style="color:var(--teal-deep);font-size:13px;">SLA garance dostupnosti systému</div>
+        </div>
+        <div style="display:inline-flex;align-items:center;gap:6px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12px;letter-spacing:0.5px;text-transform:uppercase;color:var(--teal-bright);">
+          <span data-i18n="seg_more">Zjistit více</span> <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     BENEFITS
+══════════════════════════════ -->
+<section id="vyhody" style="padding: 100px 24px; background: var(--bg);">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div style="text-align:center; margin-bottom:64px;">
+      <div class="reveal" style="margin-bottom:16px; display:flex; justify-content:center;">
+        <span class="section-label" data-i18n="ben_label">Proč KlimaFlow</span>
+      </div>
+      <h2 class="reveal" style="font-size: clamp(32px,4vw,48px); margin-bottom:16px;" data-i18n="ben_h2">Co všechno je v ceně předplatného</h2>
+      <p class="reveal" style="color:var(--slate); font-size:17px; max-width:540px; margin:0 auto;" data-i18n="ben_sub">
+        Tradiční nákup klimatizace stojí desítky tisíc korun a pak platíte servis zvlášť.
+        U nás je vše v jedné měsíční platbě — bez překvapení.
+      </p>
+    </div>
+
+    <div id="benefits-grid" style="display: grid; grid-template-columns: repeat(2,1fr); gap: 24px;">
+      <!-- ben1: Hardware — package/box icon -->
+      <div class="reveal" style="display:flex; align-items:flex-start; gap:20px; padding:28px; background:white; border:2px solid var(--teal-deep); border-radius:2px; box-shadow:var(--shadow-hard); transition:transform 0.15s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.15s ease;" onmouseover="this.style.transform='translate(-3px,-3px)';this.style.boxShadow='7px 7px 0px #0F292F'" onmouseout="this.style.transform='';this.style.boxShadow='4px 4px 0px #0F292F'">
+        <div style="width:48px;height:48px;background:var(--teal-deep);border:2px solid var(--teal-deep);border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:3px 3px 0 var(--teal-bright);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
+          </svg>
+        </div>
+        <div>
+          <div style="font-family:'Space Grotesk';font-weight:700;font-size:17px;margin-bottom:6px;" data-i18n="ben1_title">Hardware a instalace</div>
+          <div style="color:var(--slate);font-size:14px;line-height:1.65;" data-i18n="ben1_body">Prémiové inverterové jednotky od předních výrobců. Kompletní instalace certifikovanými techniky. Bez skrytých poplatků.</div>
+        </div>
+      </div>
+
+      <!-- ben2: Service — settings/wrench icon -->
+      <div class="reveal reveal-delay-1" style="display:flex; align-items:flex-start; gap:20px; padding:28px; background:white; border:2px solid var(--teal-deep); border-radius:2px; box-shadow:var(--shadow-hard); transition:transform 0.15s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.15s ease;" onmouseover="this.style.transform='translate(-3px,-3px)';this.style.boxShadow='7px 7px 0px #0F292F'" onmouseout="this.style.transform='';this.style.boxShadow='4px 4px 0px #0F292F'">
+        <div style="width:48px;height:48px;background:var(--orange);border:2px solid var(--teal-deep);border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:3px 3px 0 var(--teal-deep);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+          </svg>
+        </div>
+        <div>
+          <div style="font-family:'Space Grotesk';font-weight:700;font-size:17px;margin-bottom:6px;" data-i18n="ben2_title">Servis &amp; údržba v ceně</div>
+          <div style="color:var(--slate);font-size:14px;line-height:1.65;" data-i18n="ben2_body">Pravidelná preventivní prohlídka, čištění filtrů, kontrola chladiva. Opravy a náhradní díly — vše bez příplatku.</div>
+        </div>
+      </div>
+
+      <!-- ben3: Support 24/7 — headphones icon -->
+      <div class="reveal reveal-delay-2" style="display:flex; align-items:flex-start; gap:20px; padding:28px; background:white; border:2px solid var(--teal-deep); border-radius:2px; box-shadow:var(--shadow-hard); transition:transform 0.15s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.15s ease;" onmouseover="this.style.transform='translate(-3px,-3px)';this.style.boxShadow='7px 7px 0px #0F292F'" onmouseout="this.style.transform='';this.style.boxShadow='4px 4px 0px #0F292F'">
+        <div style="width:48px;height:48px;background:var(--teal-bright);border:2px solid var(--teal-deep);border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:3px 3px 0 var(--teal-deep);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 18v-6a9 9 0 0118 0v6"/>
+            <path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z"/>
+          </svg>
+        </div>
+        <div>
+          <div style="font-family:'Space Grotesk';font-weight:700;font-size:17px;margin-bottom:6px;" data-i18n="ben3_title">Podpora 24/7</div>
+          <div style="color:var(--slate);font-size:14px;line-height:1.65;" data-i18n="ben3_body">Havarijní linka nepřetržitě. Vzdálená diagnostika, výjezd technika do 4 hodin v pracovní den.</div>
+        </div>
+      </div>
+
+      <!-- ben4: Guarantee — check-circle icon -->
+      <div class="reveal reveal-delay-3" style="display:flex; align-items:flex-start; gap:20px; padding:28px; background:white; border:2px solid var(--teal-deep); border-radius:2px; box-shadow:var(--shadow-hard); transition:transform 0.15s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.15s ease;" onmouseover="this.style.transform='translate(-3px,-3px)';this.style.boxShadow='7px 7px 0px #0F292F'" onmouseout="this.style.transform='';this.style.boxShadow='4px 4px 0px #0F292F'">
+        <div style="width:48px;height:48px;background:var(--teal-mid);border:2px solid var(--teal-deep);border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:3px 3px 0 var(--teal-deep);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <div>
+          <div style="font-family:'Space Grotesk';font-weight:700;font-size:17px;margin-bottom:6px;" data-i18n="ben4_title">Garance a transparentnost</div>
+          <div style="color:var(--slate);font-size:14px;line-height:1.65;" data-i18n="ben4_body">Jasná smlouva bez skrytých poplatků. Veškeré podmínky (výměna, konec smlouvy, odkup) sjednány předem — žádná překvapení.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     CALCULATOR
+══════════════════════════════ -->
+<section id="kalkulacka" style="padding: 100px 24px; background: var(--surface); border-top: 2px solid var(--border);">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div style="text-align:center; margin-bottom:64px;">
+      <div class="reveal" style="margin-bottom:16px; display:flex; justify-content:center;">
+        <span class="section-label" data-i18n="calc_label">Kalkulačka</span>
+      </div>
+      <h2 class="reveal" style="font-size: clamp(28px,4vw,44px); margin-bottom:14px;" data-i18n="calc_h2">Spočítejte si úspory</h2>
+      <p class="reveal" style="color:var(--slate); font-size:16px; max-width:480px; margin:0 auto;" data-i18n="calc_sub">Zadejte počet jednotek a typ smlouvy — výsledky se aktualizují okamžitě.</p>
+    </div>
+
+    <!-- Calculator card -->
+    <div class="reveal" style="background:white; border:2px solid var(--teal-deep); border-radius:2px; box-shadow:var(--shadow-hard); overflow:hidden;">
+
+      <!-- Top bar: segment + language toggles -->
+      <div style="background:var(--teal-deep); padding:16px 32px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <!-- Segment toggle -->
+        <div style="display:flex; gap:0;">
+          <button id="seg-dev" onclick="setSegment('developer')" style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;padding:9px 18px;background:var(--orange);color:white;border:2px solid var(--orange);border-radius:2px 0 0 2px;cursor:pointer;transition:all 0.15s;">Developer / Firma</button>
+          <button id="seg-svj" onclick="setSegment('svj')" style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;padding:9px 18px;background:transparent;color:rgba(255,255,255,0.6);border:2px solid rgba(255,255,255,0.2);border-left:none;border-radius:0 2px 2px 0;cursor:pointer;transition:all 0.15s;">SVJ / Bytové Dru.</button>
+        </div>
+        <!-- Language toggle -->
+        <div style="display:flex; gap:0;">
+          <button id="lang-cz" onclick="setLang('cz')" style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12px;padding:7px 14px;background:rgba(255,255,255,0.15);color:white;border:1.5px solid rgba(255,255,255,0.3);border-radius:2px 0 0 2px;cursor:pointer;transition:all 0.15s;">CZ</button>
+          <button id="lang-en" onclick="setLang('en')" style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12px;padding:7px 14px;background:transparent;color:rgba(255,255,255,0.5);border:1.5px solid rgba(255,255,255,0.15);border-left:none;border-radius:0 2px 2px 0;cursor:pointer;transition:all 0.15s;">EN</button>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0;">
+
+        <!-- LEFT: Inputs -->
+        <div style="padding:36px; border-right:2px solid var(--border);">
+          <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--slate);margin-bottom:28px;" id="lbl-inputs">Parametry projektu</div>
+
+          <!-- Small units -->
+          <div style="margin-bottom:28px;">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;">
+              <label style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;color:var(--teal-deep);" id="lbl-small">Malé jednotky <span style="font-weight:400;color:var(--slate);font-size:12px;">(do 50 m²)</span></label>
+              <span style="font-family:'Outfit',sans-serif;font-weight:700;font-size:22px;color:var(--teal-deep);min-width:32px;text-align:right;" id="disp-small">0</span>
+            </div>
+            <input type="range" id="sld-small" min="0" max="50" value="0" oninput="sliderUpdate('small')" style="width:100%;height:6px;accent-color:var(--teal-bright);cursor:pointer;margin-bottom:6px;" />
+            <div style="display:flex;justify-content:space-between;">
+              <span style="font-size:11px;color:var(--slate);">0</span>
+              <span style="font-size:11px;color:var(--slate);" id="lbl-unit-price-small">35 €/měs za kus</span>
+              <span style="font-size:11px;color:var(--slate);">50</span>
+            </div>
+            <input type="number" id="inp-small" value="0" min="0" max="999" oninput="clampAndUpdate('small')" style="display:none;" />
+          </div>
+
+          <!-- Large units -->
+          <div style="margin-bottom:28px;">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;">
+              <label style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;color:var(--teal-deep);" id="lbl-large">Velké jednotky <span style="font-weight:400;color:var(--slate);font-size:12px;">(nad 50 m²)</span></label>
+              <span style="font-family:'Outfit',sans-serif;font-weight:700;font-size:22px;color:var(--teal-deep);min-width:32px;text-align:right;" id="disp-large">0</span>
+            </div>
+            <input type="range" id="sld-large" min="0" max="50" value="0" oninput="sliderUpdate('large')" style="width:100%;height:6px;accent-color:var(--teal-bright);cursor:pointer;margin-bottom:6px;" />
+            <div style="display:flex;justify-content:space-between;">
+              <span style="font-size:11px;color:var(--slate);">0</span>
+              <span style="font-size:11px;color:var(--slate);" id="lbl-unit-price-large">47 €/měs za kus</span>
+              <span style="font-size:11px;color:var(--slate);">50</span>
+            </div>
+            <input type="number" id="inp-large" value="0" min="0" max="999" oninput="clampAndUpdate('large')" style="display:none;" />
+          </div>
+
+          <!-- Contract toggle -->
+          <div style="margin-bottom:28px;">
+            <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;color:var(--teal-deep);margin-bottom:12px;" id="lbl-contract">Délka smlouvy</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <button id="ct-3" onclick="setContract(3)" style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;padding:12px 16px;background:var(--teal-deep);color:white;border:2px solid var(--teal-deep);border-radius:2px;cursor:pointer;transition:all 0.15s;text-align:center;">3 <span id="lbl-years-3">roky</span></button>
+              <button id="ct-5" onclick="setContract(5)" style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;padding:12px 16px;background:transparent;color:var(--slate);border:2px solid var(--border);border-radius:2px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:8px;">5 <span id="lbl-years-5">let</span> <span style="font-size:10px;font-weight:700;padding:2px 6px;background:#E8F8F7;color:var(--teal-bright);border:1px solid var(--teal-bright);border-radius:2px;" id="badge-discount">−8%</span></button>
+            </div>
+          </div>
+
+          <!-- Min units warning -->
+          <div id="warn-min" style="display:none; padding:12px 16px; background:#FFF8F5; border:1.5px solid var(--orange); border-radius:2px; font-size:13px; color:var(--orange); font-family:'Space Grotesk',sans-serif; font-weight:600;"></div>
+
+          <!-- Empty state hint -->
+          <div id="hint-empty" style="padding:14px 16px; background:rgba(20,160,152,0.06); border:1.5px solid rgba(20,160,152,0.2); border-radius:2px; font-size:13px; color:var(--slate); line-height:1.6;">
+            <strong style="color:var(--teal-deep);">Jak kalkulačka funguje:</strong><br/>
+            Zadejte počet klimatizovaných místností nebo bytů pomocí posuvníků výše. Výsledky uvidíte okamžitě vpravo.
+          </div>
+        </div>
+
+        <!-- RIGHT: Results -->
+        <div style="padding:36px; background:#FAFBFC;">
+
+          <!-- Headline changes by segment -->
+          <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--teal-bright);margin-bottom:8px;" id="res-label">Uvolněný cashflow oproti nákupu</div>
+
+          <!-- Big savings number -->
+          <div id="res-number" style="font-family:'Outfit',sans-serif;font-weight:700;font-size:clamp(36px,4vw,56px);letter-spacing:-0.04em;color:var(--orange);line-height:1;margin-bottom:6px;">—</div>
+          <div id="res-sub" style="font-size:13px;color:var(--slate);margin-bottom:24px;line-height:1.5;"></div>
+
+          <!-- Warning message (when KlimaFlow > purchase) -->
+          <div id="res-warning" style="display:none; padding:14px 18px; background:#FFF8F5; border:2px solid var(--orange); border-radius:2px; font-size:14px; color:var(--teal-deep); line-height:1.6; margin-bottom:20px;"></div>
+
+          <!-- Visual comparison bars with values -->
+          <div id="comparison-bar" style="margin-bottom:24px;">
+            <div style="margin-bottom:10px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                <span style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;color:var(--teal-deep);" id="lbl-bar-kf">KlimaFlow celkem</span>
+                <span style="font-family:'Outfit',sans-serif;font-weight:700;font-size:15px;color:var(--teal-deep);" id="val-kf-total">—</span>
+              </div>
+              <div style="height:10px;background:var(--bg);border:1.5px solid var(--border);border-radius:2px;overflow:hidden;">
+                <div id="bar-kf" style="height:100%;background:var(--teal-bright);transition:width 0.4s cubic-bezier(0.22,1,0.36,1);width:0%;"></div>
+              </div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                <span style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;color:var(--slate);" id="lbl-bar-buy">Nákup + instalace celkem</span>
+                <span style="font-family:'Outfit',sans-serif;font-weight:700;font-size:15px;color:var(--slate);" id="val-purchase">—</span>
+              </div>
+              <div style="height:10px;background:var(--bg);border:1.5px solid var(--border);border-radius:2px;overflow:hidden;">
+                <div id="bar-buy" style="height:100%;background:var(--slate);transition:width 0.4s cubic-bezier(0.22,1,0.36,1);width:0%;opacity:0.45;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Metrics row -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:20px;">
+            <div style="padding:14px; background:white; border:2px solid var(--border); border-radius:2px;">
+              <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:10px;letter-spacing:0.8px;text-transform:uppercase;color:var(--slate);margin-bottom:4px;" id="lbl-m1">Měsíční splátka</div>
+              <div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:18px;color:var(--teal-deep);" id="val-monthly">—</div>
+            </div>
+            <div style="padding:14px; background:white; border:2px solid var(--border); border-radius:2px;">
+              <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:10px;letter-spacing:0.8px;text-transform:uppercase;color:var(--slate);margin-bottom:4px;" id="lbl-m3">Instalační poplatek</div>
+              <div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:18px;color:var(--teal-deep);" id="val-setup">—</div>
+            </div>
+          </div>
+
+          <!-- Included services tags -->
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;" id="services-tags"></div>
+
+          <!-- CTA -->
+          <a href="#kontakt" id="calc-cta" class="btn-primary" style="width:100%;justify-content:center;font-size:14px;">
+            Domluvit hovor — získat nabídku
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <p id="calc-note" style="text-align:center;font-size:12px;color:var(--slate);margin-top:8px;">Nezávazná konzultace. Odpovíme do 24 hodin.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     FAQ
+══════════════════════════════ -->
+<section id="faq" style="padding: 100px 24px; background: var(--surface); border-top: 2px solid var(--border);">
+  <div style="max-width: 800px; margin: 0 auto;">
+
+    <div style="text-align: center; margin-bottom: 64px;">
+      <div class="reveal" style="margin-bottom: 16px; display: flex; justify-content: center;">
+        <span class="section-label" data-i18n="faq_label">Časté dotazy</span>
+      </div>
+      <h2 class="reveal" style="font-size: clamp(28px, 4vw, 44px);" data-i18n="faq_h2">Odpovědi na vaše otázky</h2>
+    </div>
+
+    <div id="faq-list" style="display: flex; flex-direction: column; gap: 12px;">
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     CONTACT / CTA
+══════════════════════════════ -->
+<section id="kontakt" style="padding: 100px 24px; background: var(--bg); border-top: 2px solid var(--border);">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div id="contact-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start;">
+
+      <!-- Left: copy -->
+      <div>
+        <div class="reveal" style="margin-bottom: 16px;">
+          <span class="section-label" data-i18n="contact_label">Kontakt</span>
+        </div>
+        <h2 class="reveal" style="font-size: clamp(28px, 4vw, 44px); margin-bottom: 20px;" data-i18n="contact_h2">
+          Zjistěte cenu<br/>pro váš objekt
+        </h2>
+        <p class="reveal" style="color: var(--slate); font-size: 17px; line-height: 1.7; margin-bottom: 40px;" data-i18n="contact_sub">
+          Vyplňte formulář a do 24 hodin vám zašleme nezávaznou
+          nabídku s přesnou cenou předplatného.
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          <div class="reveal" style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 44px; height: 44px; background: var(--teal-bright); border: 2px solid var(--teal-deep); border-radius: 2px; box-shadow: 2px 2px 0px var(--teal-deep); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 12.68 19.79 19.79 0 01.12 4.02 2 2 0 012.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 9.91a16 16 0 006.18 6.18l1.08-.87a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            </div>
+            <div>
+              <div style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 15px;">Zavolejte nám</div>
+              <div style="color: var(--slate); font-size: 14px;">+420 XXX XXX XXX</div>
+            </div>
+          </div>
+          <div class="reveal reveal-delay-1" style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 44px; height: 44px; background: var(--orange); border: 2px solid var(--teal-deep); border-radius: 2px; box-shadow: 2px 2px 0px var(--teal-deep); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <div>
+              <div style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 15px;">Napište e-mail</div>
+              <div style="color: var(--slate); font-size: 14px;">info@clima.cz</div>
+            </div>
+          </div>
+          <div class="reveal reveal-delay-2" style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 44px; height: 44px; background: var(--teal-mid); border: 2px solid var(--teal-deep); border-radius: 2px; box-shadow: 2px 2px 0px var(--teal-deep); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div>
+              <div style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 15px;">Praha &amp; okolí</div>
+              <div style="color: var(--slate); font-size: 14px;">Celá Česká republika a Slovensko</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: form -->
+      <div class="reveal" style="background: white; border: 2px solid var(--teal-deep); border-radius: 2px; box-shadow: var(--shadow-hard); padding: 40px 36px;">
+        <form id="contact-form" onsubmit="handleSubmit(event)">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+            <div>
+              <label style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 600; letter-spacing: 0.3px; color: var(--teal-deep); display: block; margin-bottom: 6px;">Jméno *</label>
+              <input type="text" placeholder="Jan Novák" required />
+            </div>
+            <div>
+              <label style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 600; letter-spacing: 0.3px; color: var(--teal-deep); display: block; margin-bottom: 6px;">Telefon *</label>
+              <input type="text" placeholder="+420 XXX XXX XXX" required />
+            </div>
+          </div>
+
+          <div style="margin-bottom: 16px;">
+            <label style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 600; letter-spacing: 0.3px; color: var(--teal-deep); display: block; margin-bottom: 6px;">E-mail *</label>
+            <input type="email" placeholder="jan@firma.cz" required />
+          </div>
+
+          <div style="margin-bottom: 16px;">
+            <label style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 600; letter-spacing: 0.3px; color: var(--teal-deep); display: block; margin-bottom: 6px;">Typ objektu</label>
+            <select style="appearance: none; cursor: pointer; background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230F292F' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; padding-right: 40px;">
+              <option value="">Vyberte typ objektu...</option>
+              <option>SVJ – bytový dům</option>
+              <option>Bytové družstvo</option>
+              <option>Developerský projekt</option>
+              <option>Kancelářský prostor</option>
+              <option>Jiné</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom: 16px;">
+            <label style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 600; letter-spacing: 0.3px; color: var(--teal-deep); display: block; margin-bottom: 6px;">Počet klimatizačních jednotek</label>
+            <select style="appearance: none; cursor: pointer; background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230F292F' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; padding-right: 40px;">
+              <option value="">Počet jednotek...</option>
+              <option>5–20 jednotek</option>
+              <option>21–50 jednotek</option>
+              <option>51–100 jednotek</option>
+              <option>100+ jednotek</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom: 24px;">
+            <label style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 600; letter-spacing: 0.3px; color: var(--teal-deep); display: block; margin-bottom: 6px;">Zpráva (nepovinné)</label>
+            <textarea placeholder="Popište váš projekt nebo dotaz..." rows="3" style="resize: vertical; min-height: 80px;"></textarea>
+          </div>
+
+          <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; font-size: 15px;">
+            Odeslat poptávku
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+
+          <p style="font-size: 12px; color: var(--slate); text-align: center; margin-top: 12px; line-height: 1.5;">
+            Odesláním souhlasíte se zpracováním osobních údajů dle GDPR.
+            Nikdy nesdílíme vaše kontaktní údaje třetím stranám.
+          </p>
+        </form>
+
+        <div id="form-success" style="display: none; text-align: center; padding: 24px 0;">
+          <div style="width: 56px; height: 56px; background: var(--teal-bright); border: 2px solid var(--teal-deep); border-radius: 2px; box-shadow: 3px 3px 0px var(--teal-deep); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div style="font-family: 'Space Grotesk'; font-weight: 700; font-size: 20px; margin-bottom: 8px;">Poptávka odeslána!</div>
+          <p style="color: var(--slate); font-size: 15px;">Do 24 hodin vás kontaktujeme s nabídkou na míru.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     FOOTER
+══════════════════════════════ -->
+<footer style="background: var(--teal-deep); border-top: 2px solid rgba(255,255,255,0.1); padding: 60px 24px 40px;" class="grid-texture-dark">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div id="footer-grid" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px;">
+
+      <!-- Brand column -->
+      <div>
+        <a href="#" style="text-decoration:none; display:inline-flex; align-items:center; margin-bottom:16px;">
+          <svg viewBox="0 0 182 46" width="182" height="46" xmlns="http://www.w3.org/2000/svg">
+            <text x="0" y="30" font-family="'Outfit',sans-serif" font-weight="700" font-size="27" fill="#ffffff" letter-spacing="-0.5">Klima</text>
+            <circle cx="75" cy="13" r="4" stroke="#FF6B35" stroke-width="1.8" fill="none"/>
+            <text x="82" y="30" font-family="'Outfit',sans-serif" font-weight="300" font-size="27" fill="rgba(255,255,255,0.35)" letter-spacing="-0.5">Flow</text>
+            <text x="0" y="44" font-family="'Space Grotesk',sans-serif" font-weight="600" font-size="8.5" fill="rgba(255,255,255,0.3)" textLength="182" lengthAdjust="spacing">KLIMATIZACE NA PŘEDPLATNÉ</text>
+          </svg>
+        </a>
+        <p style="color: rgba(255,255,255,0.5); font-size: 14px; line-height: 1.7; max-width: 260px; margin-top: 16px;">
+          Klimatizace jako předplatná služba pro bytové domy, SVJ, bytová družstva a kanceláře v ČR a SR.
+        </p>
+      </div>
+
+      <!-- Služby -->
+      <div>
+        <div style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 16px;">Služby</div>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <a href="#pro-koho" style="color: rgba(255,255,255,0.65); font-size: 14px; text-decoration: none; transition: color 0.15s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Pro SVJ</a>
+          <a href="#pro-koho" style="color: rgba(255,255,255,0.65); font-size: 14px; text-decoration: none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Pro bytová družstva</a>
+          <a href="#pro-koho" style="color: rgba(255,255,255,0.65); font-size: 14px; text-decoration: none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Pro developery</a>
+          <a href="#pro-koho" style="color: rgba(255,255,255,0.65); font-size: 14px; text-decoration: none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Pro kanceláře</a>
+        </div>
+      </div>
+
+      <!-- Firma -->
+      <div>
+        <div style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 16px;">Firma</div>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <a href="#jak-to-funguje" style="color: rgba(255,255,255,0.65); font-size: 14px; text-decoration: none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Jak to funguje</a>
+          <a href="#faq" style="color: rgba(255,255,255,0.65); font-size: 14px; text-decoration: none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">FAQ</a>
+          <a href="#kontakt" style="color: rgba(255,255,255,0.65); font-size: 14px; text-decoration: none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Kontakt</a>
+        </div>
+      </div>
+
+      <!-- Kontakt -->
+      <div>
+        <div style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 16px;">Kontakt</div>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <span style="color: rgba(255,255,255,0.65); font-size: 14px;">info@clima.cz</span>
+          <span style="color: rgba(255,255,255,0.65); font-size: 14px;">+420 XXX XXX XXX</span>
+          <span style="color: rgba(255,255,255,0.65); font-size: 14px;">Praha, Česká republika</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+      <span style="color: rgba(255,255,255,0.3); font-size: 13px;">© 2026 Clima s.r.o. Všechna práva vyhrazena.</span>
+      <div style="display: flex; gap: 20px;">
+        <a href="#" style="color: rgba(255,255,255,0.3); font-size: 13px; text-decoration: none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">Ochrana osobních údajů</a>
+        <a href="#" style="color: rgba(255,255,255,0.3); font-size: 13px; text-decoration: none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">Obchodní podmínky</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ─── LANGUAGE SWITCH ───
+  const I18N = {
+    cz: {
+      // Nav
+      nav_how:       'Jak to funguje',
+      nav_for_whom:  'Pro koho',
+      nav_benefits:  'Výhody',
+      nav_calc:      'Kalkulačka',
+      nav_pricing:   'Ceník',
+      nav_contact:   'Kontakt',
+      nav_cta:       'Nezávazná poptávka <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>',
+      // Hero
+      hero_tag:      'AC as a Service &nbsp;·&nbsp; CZ &amp; SK',
+      hero_h1_top:   'Klimatizace',
+      hero_h1_accent:'bez investice.',
+      hero_h1_bot:   'Jen měsíční<br/>předplatné.',
+      hero_sub:      'Moderní klimatizační systémy pro SVJ, bytová družstva, developery a kancelářské prostory. Servis v ceně, bez skrytých poplatků.',
+      hero_cta1:     'Získat nezávaznou nabídku <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>',
+      hero_cta2:     'Jak to funguje',
+      trust_1:       'Bez vstupní investice',
+      trust_2:       'Servis &amp; údržba v ceně',
+      trust_3:       'Smlouva bez skrytých poplatků',
+      badge_sub:     'PŘEDPLATNÉ',
+      badge_price:   'od 890 Kč/měs',
+      // About section
+      about_label:      'O řešení',
+      about_photo_label:'SVJ · Bytová Družstva · Developeré · Kanceláře',
+      about_photo_tagline:'Komfort bez<br/>vlastnictví.',
+      about_h2_top:    'Nový standard pro',
+      about_h2_accent: 'klimatizaci budov.',
+      about_sub:       'Vyvinuli jsme řešení, které odděluje vysokovýkonné klimatizování od kapitálového rizika. Vlastníme celý životní cyklus zařízení — vy jen platíte fixní předplatné a užíváte si pohodlí.',
+      about_f1_title:  'Ochrana kapitálu',
+      about_f1_body:   'Přesměrujte kapitál od odepisujícího mechanického vybavení k rozvoji klíčových byznysových aktivit a inovacím.',
+      about_f2_title:  'Výkon jako služba',
+      about_f2_body:   'Měsíční předplatné zahrnuje veškerou údržbu, opravy a technologické inovace — bez nečekaných nákladů a bez vlastnictví zařízení.',
+      about_f3_title:  'Předvídatelné náklady',
+      about_f3_body:   'Fixní měsíční platba bez skrytých poplatků. Žádná překvapení v rozpočtu — od instalace po výměnu zařízení.',
+      // Stats
+      stat1_label: 'vstupní investice',
+      stat2_label: 'čas instalace',
+      stat3_label: 'servis v ceně',
+      stat4_label: 'garance kvality',
+      // How it works
+      how_label: 'Jak to funguje',
+      how_h2:    'Tři kroky k chladu bez komplikací',
+      how_sub:   'Celý proces od poptávky po spuštění zvládneme za méně než týden.',
+      step1_title: 'Zvolíte plán',
+      step1_body:  'Vyplníte nezávazný formulář. Sdělíte nám počet místností, typ objektu a požadovaný výkon. Zdarma vypracujeme technické řešení na míru.',
+      step1_tag:   'Zdarma &amp; nezávazně',
+      step2_title: 'Instalace v ceně',
+      step2_body:  'Naši certifikovaní technici vše nainstalují na naše náklady do 48 hodin. Vnitřní i vnější jednotky, elektroinstalace, kabeláž — vše bez starostí.',
+      step2_tag:   'Bez skryté ceny',
+      step3_title: 'Platíte měsíčně',
+      step3_body:  'Fixní měsíční splátka zahrnuje hardware, servis, pravidelnou údržbu i technickou podporu. Žádné překvapení, žádné dodatečné náklady.',
+      step3_tag:   'Vše v jedné platbě',
+      // Segments
+      seg_label:     'Pro koho to je',
+      seg_h2:        'Řešení šité na míru každému segmentu',
+      seg_sub:       'Ať spravujete bytový dům, plánujete developerský projekt nebo provozujete kancelář — máme správné řešení.',
+      seg_more:      'Zjistit více',
+      seg_svj_title: 'Společenství vlastníků',
+      seg_bd_title:  'Bytová družstva',
+      seg_dev_title: 'Developeři',
+      seg_off_title: 'Kancelářské prostory',
+      // Benefits
+      ben_label: 'Proč KlimaFlow',
+      ben_h2:    'Co všechno je v ceně předplatného',
+      ben_sub:   'Tradiční nákup klimatizace stojí desítky tisíc korun a pak platíte servis zvlášť. U nás je vše v jedné měsíční platbě — bez překvapení.',
+      ben1_title: 'Hardware a instalace',
+      ben1_body:  'Prémiové inverterové jednotky od předních výrobců. Kompletní instalace certifikovanými techniky. Bez skrytých poplatků.',
+      ben2_title: 'Servis &amp; údržba v ceně',
+      ben2_body:  'Pravidelná preventivní prohlídka, čištění filtrů, kontrola chladiva. Opravy a náhradní díly — vše bez příplatku.',
+      ben3_title: 'Podpora 24/7',
+      ben3_body:  'Havarijní linka nepřetržitě. Vzdálená diagnostika, výjezd technika do 4 hodin v pracovní den.',
+      ben4_title: 'Garance a transparentnost',
+      ben4_body:  'Jasná smlouva bez skrytých poplatků. Veškeré podmínky (výměna, konec smlouvy, odkup) sjednány předem — žádná překvapení.',
+      // Calculator
+      calc_label: 'Kalkulačka',
+      calc_h2:    'Spočítejte si úspory',
+      calc_sub:   'Zadejte počet jednotek a typ smlouvy — výsledky se aktualizují okamžitě.',
+      // Pricing
+      price_label: 'Ceník',
+      price_h2:    'Transparentní předplatné',
+      price_sub:   'Žádné skryté poplatky, žádné překvapivé faktury. Cena zahrnuje vše od instalace po servis.',
+      // FAQ
+      faq_label: 'Časté dotazy',
+      faq_h2:    'Odpovědi na vaše otázky',
+      // Contact
+      contact_label: 'Kontakt',
+      contact_h2:    'Zjistěte cenu<br/>pro váš objekt',
+      contact_sub:   'Vyplňte formulář a do 24 hodin vám zašleme nezávaznou nabídku s přesnou cenou předplatného.',
+    },
+    sk: {
+      // Nav
+      nav_how:       'Ako to funguje',
+      nav_for_whom:  'Pre koho',
+      nav_benefits:  'Výhody',
+      nav_calc:      'Kalkulačka',
+      nav_pricing:   'Cenník',
+      nav_contact:   'Kontakt',
+      nav_cta:       'Nezáväzná ponuka <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>',
+      // Hero
+      hero_tag:      'AC as a Service &nbsp;·&nbsp; CZ &amp; SK',
+      hero_h1_top:   'Klimatizácia',
+      hero_h1_accent:'bez investície.',
+      hero_h1_bot:   'Len mesačné<br/>predplatné.',
+      hero_sub:      'Moderné klimatizačné systémy pre SVB, bytové družstvá, developerov a kancelárske priestory. Servis v cene, bez skrytých poplatkov.',
+      hero_cta1:     'Získať nezáväznú ponuku <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>',
+      hero_cta2:     'Ako to funguje',
+      trust_1:       'Bez vstupnej investície',
+      trust_2:       'Servis &amp; údržba v cene',
+      trust_3:       'Zmluva bez skrytých poplatkov',
+      badge_sub:     'PREDPLATNÉ',
+      badge_price:   'od 890 Kč/mes',
+      // About section
+      about_label:      'O riešení',
+      about_photo_label:'SVB · Bytové Družstvá · Developeri · Kancelárie',
+      about_photo_tagline:'Komfort bez<br/>vlastníctva.',
+      about_h2_top:    'Nový štandard pre',
+      about_h2_accent: 'klimatizáciu budov.',
+      about_sub:       'Vyvinuli sme riešenie, ktoré oddeľuje vysokovýkonné klimatizovanie od kapitálového rizika. Vlastníme celý životný cyklus zariadenia — vy len platíte fixné predplatné a užívate si pohodlie.',
+      about_f1_title:  'Ochrana kapitálu',
+      about_f1_body:   'Presmerujte kapitál od odepisujúceho mechanického vybavenia k rozvoju kľúčových biznis aktivít a inováciám.',
+      about_f2_title:  'Výkon ako služba',
+      about_f2_body:   'Mesačné predplatné zahŕňa všetku údržbu, opravy a technologické inovácie — bez nečakaných nákladov a bez vlastníctva zariadenia.',
+      about_f3_title:  'Predvídateľné náklady',
+      about_f3_body:   'Fixná mesačná platba bez skrytých poplatkov. Žiadne prekvapenia v rozpočte — od inštalácie po výmenu zariadenia.',
+      // Stats
+      stat1_label: 'vstupná investícia',
+      stat2_label: 'čas inštalácie',
+      stat3_label: 'servis v cene',
+      stat4_label: 'garancia kvality',
+      // How it works
+      how_label: 'Ako to funguje',
+      how_h2:    'Tri kroky ku pohodliu bez komplikácií',
+      how_sub:   'Celý proces od dopytu po spustenie zvládneme za menej ako týždeň.',
+      step1_title: 'Zvolíte plán',
+      step1_body:  'Vyplníte nezáväzný formulár. Poviete nám počet miestností, typ objektu a požadovaný výkon. Bezplatne vypracujeme technické riešenie na mieru.',
+      step1_tag:   'Zadarmo &amp; nezáväzne',
+      step2_title: 'Inštalácia v cene',
+      step2_body:  'Naši certifikovaní technici všetko nainštalujú na naše náklady do 48 hodín. Vnútorné aj vonkajšie jednotky, elektroinštalácia, kabeláž — všetko bez starostí.',
+      step2_tag:   'Bez skrytej ceny',
+      step3_title: 'Platíte mesačne',
+      step3_body:  'Fixná mesačná splátka zahŕňa hardware, servis, pravidelnú údržbu aj technickú podporu. Žiadne prekvapenia, žiadne dodatočné náklady.',
+      step3_tag:   'Všetko v jednej platbe',
+      // Segments
+      seg_label:     'Pre koho to je',
+      seg_h2:        'Riešenie šité na mieru každému segmentu',
+      seg_sub:       'Či spravujete bytový dom, plánujete developerský projekt alebo prevádzkujete kanceláriu — máme správne riešenie.',
+      seg_more:      'Zistiť viac',
+      seg_svj_title: 'Spoločenstvo vlastníkov (SVB)',
+      seg_bd_title:  'Bytové družstvá',
+      seg_dev_title: 'Developeri',
+      seg_off_title: 'Kancelárske priestory',
+      // Benefits
+      ben_label: 'Prečo KlimaFlow',
+      ben_h2:    'Čo všetko je v cene predplatného',
+      ben_sub:   'Tradičný nákup klimatizácie stojí desiatky tisíc korún a potom platíte servis zvlášť. U nás je všetko v jednej mesačnej platbe — bez prekvapení.',
+      ben1_title: 'Hardware a inštalácia',
+      ben1_body:  'Prémiové inverterové jednotky od popredných výrobcov. Kompletná inštalácia certifikovanými technikmi. Bez skrytých poplatkov.',
+      ben2_title: 'Servis &amp; údržba v cene',
+      ben2_body:  'Pravidelná preventívna prehliadka, čistenie filtrov, kontrola chladiva. Opravy a náhradné diely — všetko bez príplatku.',
+      ben3_title: 'Podpora 24/7',
+      ben3_body:  'Havarijná linka nepretržite. Vzdialená diagnostika, výjazd technika do 4 hodín v pracovný deň.',
+      ben4_title: 'Garancia a transparentnosť',
+      ben4_body:  'Jasná zmluva bez skrytých poplatkov. Všetky podmienky (výmena, koniec zmluvy, odkúpenie) dohodnuté vopred — žiadne prekvapenia.',
+      // Calculator
+      calc_label: 'Kalkulačka',
+      calc_h2:    'Spočítajte si úspory',
+      calc_sub:   'Zadajte počet jednotiek a typ zmluvy — výsledky sa aktualizujú okamžite.',
+      // Pricing
+      price_label: 'Cenník',
+      price_h2:    'Transparentné predplatné',
+      price_sub:   'Žiadne skryté poplatky, žiadne prekvapivé faktúry. Cena zahŕňa všetko od inštalácie po servis.',
+      // FAQ
+      faq_label: 'Časté otázky',
+      faq_h2:    'Odpovede na vaše otázky',
+      // Contact
+      contact_label: 'Kontakt',
+      contact_h2:    'Zistite cenu<br/>pre váš objekt',
+      contact_sub:   'Vyplňte formulár a do 24 hodín vám zašleme nezáväznú ponuku s presnou cenou predplatného.',
+    }
+  };
+
+  let currentPageLang = 'cz';
+
+  function setPageLang(lang) {
+    currentPageLang = lang;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (I18N[lang] && I18N[lang][key] !== undefined) {
+        el.innerHTML = I18N[lang][key];
+      }
+    });
+    // Button active states
+    document.getElementById('lang-cz-btn').classList.toggle('active', lang === 'cz');
+    document.getElementById('lang-sk-btn').classList.toggle('active', lang === 'sk');
+    // Re-render FAQ in correct language
+    renderFaq(lang);
+    // Update html lang attribute
+    document.documentElement.lang = lang === 'sk' ? 'sk' : 'cs';
+    // Persist preference
+    try { localStorage.setItem('kf_lang', lang); } catch(e){}
+  }
+
+  // Init from stored preference
+  (function() {
+    let stored = 'cz';
+    try { stored = localStorage.getItem('kf_lang') || 'cz'; } catch(e){}
+    if (stored === 'sk') setPageLang('sk');
+  })();
+
+  // ─── CALCULATOR ───
+  const CFG = {
+    SMALL_EUR: 35,
+    LARGE_EUR: 47,
+    SETUP_EUR: 150,
+    PURCHASE_EUR: 1400,
+    DISC_5Y: 0.08,
+    CZK: 25,
+    MIN: 5
+  };
+
+  let calcState = { segment: 'developer', lang: 'cz', contract: 3 };
+
+  const T = {
+    cz: {
+      segDev: 'Developer / Firma', segSvj: 'SVJ / Bytové Dru.',
+      inputs: 'Parametry projektu',
+      small: 'Malé jednotky', smallSub: '(do 50 m²)',
+      large: 'Velké jednotky', largeSub: '(nad 50 m²)',
+      contract: 'Délka smlouvy',
+      yr3: 'roky', yr5: 'let',
+      warnMin: 'Minimum je 5 jednotek — pro menší projekty nás prosím kontaktujte.',
+      labelDev: 'Uvolněný cashflow oproti nákupu',
+      labelSvj: 'Vaše úspory oproti nákupu',
+      subDev: 'Kapitál, který nemusíte investovat do nákupu zařízení.',
+      subSvj: 'Celková úspora za dobu smlouvy oproti přímému nákupu.',
+      warnNeg: 'Při kratší smlouvě se nákup může vyplatit — domluvte si konzultaci.',
+      m1: 'Měsíční splátka', m2: 'Celková cena nákupu', m3: 'Instalační poplatek',
+      barKF: 'KlimaFlow celkem', barBuy: 'Nákup celkem',
+      services: ['Instalace','Servis & údržba','Opravy','Výměna při poruše','Podpora 24/7'],
+      cta: 'Domluvit hovor — získat nabídku',
+      note: 'Nezávazná konzultace. Odpovíme do 24 hodin.',
+      curr: v => Math.round(v * CFG.CZK).toLocaleString('cs-CZ').replace(/\u00a0/g,' ') + ' Kč',
+      unitSmall: '35 €/měs', unitLarge: '47 €/měs'
+    },
+    en: {
+      segDev: 'Developer / Company', segSvj: 'HOA / Housing Co-op',
+      inputs: 'Project parameters',
+      small: 'Small units', smallSub: '(under 50 m²)',
+      large: 'Large units', largeSub: '(above 50 m²)',
+      contract: 'Contract length',
+      yr3: 'years', yr5: 'years',
+      warnMin: 'Minimum is 5 units — please contact us for smaller projects.',
+      labelDev: 'Cashflow freed up vs. buying',
+      labelSvj: 'Your savings vs. buying',
+      subDev: 'Capital you don\'t need to invest upfront in hardware.',
+      subSvj: 'Total savings over the contract term vs. outright purchase.',
+      warnNeg: 'For a short contract, buying may be cheaper — book a consultation.',
+      m1: 'Monthly fee', m2: 'Total purchase cost', m3: 'Setup fee',
+      barKF: 'KlimaFlow total', barBuy: 'Purchase total',
+      services: ['Installation','Service & maintenance','Repairs','Replacement on failure','24/7 support'],
+      cta: 'Book a call — get a quote',
+      note: 'No commitment. We reply within 24 hours.',
+      curr: v => '€' + Math.round(v).toLocaleString('en-US'),
+      unitSmall: '€35/mo', unitLarge: '€47/mo'
+    }
+  };
+
+  function getValues() {
+    const s = parseInt(document.getElementById('inp-small').value) || 0;
+    const l = parseInt(document.getElementById('inp-large').value) || 0;
+    return { s, l };
+  }
+
+  function sliderUpdate(type) {
+    const sld = document.getElementById('sld-' + type);
+    const inp = document.getElementById('inp-' + type);
+    const disp = document.getElementById('disp-' + type);
+    inp.value = sld.value;
+    disp.textContent = sld.value;
+    renderCalc();
+  }
+
+  function computeCalc(s, l, contract, lang) {
+    const t = T[lang];
+    const months = contract * 12;
+    const disc = contract === 5 ? CFG.DISC_5Y : 0;
+    const monthlyBase = s * CFG.SMALL_EUR + l * CFG.LARGE_EUR;
+    const monthly = monthlyBase * (1 - disc);
+    const totalUnits = s + l;
+    const setup = totalUnits * CFG.SETUP_EUR;
+    const kfTotal = monthly * months + setup;
+    const purchaseTotal = totalUnits * CFG.PURCHASE_EUR;
+    const savings = purchaseTotal - kfTotal;
+    return { monthly, totalUnits, setup, kfTotal, purchaseTotal, savings };
+  }
+
+  function fmt(eur) { return T[calcState.lang].curr(eur); }
+
+  function renderCalc() {
+    const { lang, segment, contract } = calcState;
+    const t = T[lang];
+    const { s, l } = getValues();
+    const totalUnits = s + l;
+    const { monthly, setup, kfTotal, purchaseTotal, savings } = computeCalc(s, l, contract, lang);
+
+    // Labels
+    document.getElementById('lbl-inputs').textContent = t.inputs;
+    document.getElementById('lbl-small').innerHTML = t.small + ' <span style="font-weight:400;color:var(--slate);">' + t.smallSub + '</span>';
+    document.getElementById('lbl-large').innerHTML = t.large + ' <span style="font-weight:400;color:var(--slate);">' + t.largeSub + '</span>';
+    document.getElementById('lbl-contract').textContent = t.contract;
+    document.getElementById('lbl-years-3').textContent = t.yr3;
+    document.getElementById('lbl-years-5').textContent = t.yr5;
+    document.getElementById('lbl-unit-price-small').textContent = t.unitSmall;
+    document.getElementById('lbl-unit-price-large').textContent = t.unitLarge;
+    document.getElementById('lbl-m1').textContent = t.m1;
+    document.getElementById('lbl-m3').textContent = t.m3;
+    document.getElementById('lbl-bar-kf').textContent = t.barKF;
+    document.getElementById('lbl-bar-buy').textContent = t.barBuy;
+    document.getElementById('calc-cta').textContent = '';
+    document.getElementById('calc-cta').innerHTML = t.cta + ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+    document.getElementById('calc-note').textContent = t.note;
+
+    // Segment toggle labels
+    document.getElementById('seg-dev').textContent = t.segDev;
+    document.getElementById('seg-svj').textContent = t.segSvj;
+
+    // Result headline
+    document.getElementById('res-label').textContent = segment === 'developer' ? t.labelDev : t.labelSvj;
+
+    // Min units warning
+    const warnMin = document.getElementById('warn-min');
+    if (totalUnits > 0 && totalUnits < CFG.MIN) {
+      warnMin.style.display = 'block';
+      warnMin.textContent = t.warnMin;
+    } else {
+      warnMin.style.display = 'none';
+    }
+
+    // Sync slider displays
+    document.getElementById('disp-small').textContent = s;
+    document.getElementById('disp-large').textContent = l;
+    document.getElementById('sld-small').value = Math.min(s, 50);
+    document.getElementById('sld-large').value = Math.min(l, 50);
+
+    // Empty / hint state
+    const hintEl = document.getElementById('hint-empty');
+    if (hintEl) hintEl.style.display = totalUnits === 0 ? 'block' : 'none';
+
+    // Empty state
+    if (totalUnits === 0) {
+      document.getElementById('res-number').textContent = '—';
+      document.getElementById('res-sub').textContent = '';
+      document.getElementById('res-warning').style.display = 'none';
+      document.getElementById('val-monthly').textContent = '—';
+      document.getElementById('val-setup').textContent = '—';
+      document.getElementById('val-kf-total').textContent = '—';
+      document.getElementById('val-purchase').textContent = '—';
+      document.getElementById('bar-kf').style.width = '0%';
+      document.getElementById('bar-buy').style.width = '0%';
+    } else if (savings < 0) {
+      document.getElementById('res-number').style.color = 'var(--slate)';
+      document.getElementById('res-number').textContent = '↓';
+      document.getElementById('res-sub').textContent = '';
+      const warn = document.getElementById('res-warning');
+      warn.style.display = 'block';
+      warn.textContent = t.warnNeg;
+      document.getElementById('val-monthly').textContent = fmt(monthly);
+      document.getElementById('val-setup').textContent = fmt(setup);
+      document.getElementById('val-kf-total').textContent = fmt(kfTotal);
+      document.getElementById('val-purchase').textContent = fmt(purchaseTotal + setup);
+      const maxVal = Math.max(kfTotal, purchaseTotal + setup);
+      document.getElementById('bar-kf').style.width = (kfTotal / maxVal * 96) + '%';
+      document.getElementById('bar-buy').style.width = ((purchaseTotal + setup) / maxVal * 96) + '%';
+    } else {
+      document.getElementById('res-number').style.color = 'var(--orange)';
+      document.getElementById('res-number').textContent = fmt(savings);
+      document.getElementById('res-sub').textContent = segment === 'developer' ? t.subDev : t.subSvj;
+      document.getElementById('res-warning').style.display = 'none';
+      document.getElementById('val-monthly').textContent = fmt(monthly);
+      document.getElementById('val-setup').textContent = fmt(setup);
+      document.getElementById('val-kf-total').textContent = fmt(kfTotal);
+      document.getElementById('val-purchase').textContent = fmt(purchaseTotal + setup);
+      const maxVal = Math.max(kfTotal, purchaseTotal + setup);
+      document.getElementById('bar-kf').style.width = (kfTotal / maxVal * 96) + '%';
+      document.getElementById('bar-buy').style.width = ((purchaseTotal + setup) / maxVal * 96) + '%';
+    }
+
+    // Services tags
+    const tagsEl = document.getElementById('services-tags');
+    tagsEl.innerHTML = '';
+    t.services.forEach(s => {
+      const tag = document.createElement('span');
+      tag.style.cssText = 'font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:11px;letter-spacing:0.8px;text-transform:uppercase;padding:5px 10px;background:rgba(20,160,152,0.1);color:var(--teal-bright);border:1.5px solid rgba(20,160,152,0.3);border-radius:2px;';
+      tag.textContent = s;
+      tagsEl.appendChild(tag);
+    });
+
+    // Segment button styles
+    ['dev','svj'].forEach(seg => {
+      const btn = document.getElementById('seg-' + seg);
+      const active = (seg === 'developer' ? 'dev' : 'svj') === (segment === 'developer' ? 'dev' : 'svj');
+      // re-check
+    });
+    const devActive = segment === 'developer';
+    const segDev = document.getElementById('seg-dev');
+    const segSvj = document.getElementById('seg-svj');
+    segDev.style.background = devActive ? 'var(--orange)' : 'transparent';
+    segDev.style.color = devActive ? 'white' : 'rgba(255,255,255,0.6)';
+    segDev.style.borderColor = devActive ? 'var(--orange)' : 'rgba(255,255,255,0.2)';
+    segSvj.style.background = !devActive ? 'var(--orange)' : 'transparent';
+    segSvj.style.color = !devActive ? 'white' : 'rgba(255,255,255,0.6)';
+    segSvj.style.borderColor = !devActive ? 'var(--orange)' : 'rgba(255,255,255,0.2)';
+
+    // Contract button styles
+    const ct3 = document.getElementById('ct-3');
+    const ct5 = document.getElementById('ct-5');
+    ct3.style.background = contract === 3 ? 'var(--teal-deep)' : 'transparent';
+    ct3.style.color = contract === 3 ? 'white' : 'var(--slate)';
+    ct3.style.borderColor = contract === 3 ? 'var(--teal-deep)' : 'var(--border)';
+    ct5.style.background = contract === 5 ? 'var(--teal-deep)' : 'transparent';
+    ct5.style.color = contract === 5 ? 'white' : 'var(--slate)';
+    ct5.style.borderColor = contract === 5 ? 'var(--teal-deep)' : 'var(--border)';
+
+    // Lang buttons
+    document.getElementById('lang-cz').style.background = lang === 'cz' ? 'rgba(255,255,255,0.25)' : 'transparent';
+    document.getElementById('lang-cz').style.color = lang === 'cz' ? 'white' : 'rgba(255,255,255,0.5)';
+    document.getElementById('lang-en').style.background = lang === 'en' ? 'rgba(255,255,255,0.25)' : 'transparent';
+    document.getElementById('lang-en').style.color = lang === 'en' ? 'white' : 'rgba(255,255,255,0.5)';
+  }
+
+  function setSegment(seg) { calcState.segment = seg; renderCalc(); }
+  function setLang(l) { calcState.lang = l; renderCalc(); }
+  function setContract(n) { calcState.contract = n; renderCalc(); }
+  function adj(type, delta) {
+    const inp = document.getElementById('inp-' + type);
+    inp.value = Math.max(0, (parseInt(inp.value) || 0) + delta);
+    renderCalc();
+  }
+  function clampAndUpdate(type) {
+    const inp = document.getElementById('inp-' + type);
+    if (parseInt(inp.value) < 0) inp.value = 0;
+    const val = parseInt(inp.value) || 0;
+    const sld = document.getElementById('sld-' + type);
+    const disp = document.getElementById('disp-' + type);
+    if (sld) sld.value = Math.min(val, 50);
+    if (disp) disp.textContent = val;
+    renderCalc();
+  }
+
+  // Init
+  renderCalc();
+
+  // ─── FAQ DATA (bilingual) ───
+  const faqsData = {
+    cz: [
+      {
+        q: 'Musím po skončení smlouvy vrátit klimatizaci?',
+        a: 'Po uplynutí doby smlouvy (36, 48 nebo 60 měsíců) si klimatizaci můžete odkoupit za zůstatkovou cenu, prodloužit smlouvu za zvýhodněnou sazbu, nebo si nechat zařízení demontovat. Veškeré podmínky jsou jasně sjednány dopředu.'
+      },
+      {
+        q: 'Jak dlouho trvá instalace?',
+        a: 'Standardní instalace 1–5 jednotek zvládneme do 48 hodin. Větší projekty (bytové domy, kancelářské prostory) plánujeme individuálně, typicky 3–7 pracovních dní. Instalaci provádějí certifikovaní technici bez narušení vašeho provozu.'
+      },
+      {
+        q: 'Co se stane, když se klimatizace pokazí?',
+        a: 'Opravy jsou plně zahrnuty v předplatném — bez příplatků. Při havárii zavoláte na naši linku 24/7 a technik dorazí do 4 hodin v pracovní den. Pokud opravu nelze provést okamžitě, zajistíme náhradní řešení.'
+      },
+      {
+        q: 'Mohu smlouvu předčasně ukončit?',
+        a: 'Předčasné ukončení je možné za podmínek uvedených v smlouvě. Standardně je spojeno s výkupem zařízení za zůstatkovou cenu nebo s odstupným odpovídajícím zbývajícím měsícům. Přesné podmínky probereme individuálně.'
+      },
+      {
+        q: 'Které značky klimatizací nabízíte?',
+        a: 'Spolupracujeme s předními výrobci inverterových jednotek — Mitsubishi Electric, Daikin, LG a Fujitsu. Konkrétní model doporučíme na základě velikosti a dispozic vašeho objektu.'
+      },
+      {
+        q: 'Funguje Clima i pro Slovensko?',
+        a: 'Ano, Clima poskytuje služby v celé České republice a na Slovensku. Smlouvy a fakturace jsou dostupné v CZK i EUR. Pro slovenské klienty máme síť certifikovaných partnerů.'
+      },
+      {
+        q: 'Co zahrnuje pravidelná údržba?',
+        a: 'Pravidelný preventivní servis zahrnuje: čištění filtrů a výparníku, kontrolu chladiva, kalibraci termostatu, vizuální inspekci spojů a elektroinstalace a testovací provoz s protokolem.'
+      },
+    ],
+    sk: [
+      {
+        q: 'Musím po skončení zmluvy vrátiť klimatizáciu?',
+        a: 'Po uplynutí doby zmluvy (36, 48 alebo 60 mesiacov) si klimatizáciu môžete odkúpiť za zostatkovú cenu, predĺžiť zmluvu za zvýhodnenú sadzbu, alebo si nechať zariadenie demontovať. Všetky podmienky sú jasne dohodnuté vopred.'
+      },
+      {
+        q: 'Ako dlho trvá inštalácia?',
+        a: 'Štandardnú inštaláciu 1–5 jednotiek zvládneme do 48 hodín. Väčšie projekty (bytové domy, kancelárske priestory) plánujeme individuálne, typicky 3–7 pracovných dní. Inštaláciu vykonávajú certifikovaní technici bez narušenia vašej prevádzky.'
+      },
+      {
+        q: 'Čo sa stane, ak sa klimatizácia pokazí?',
+        a: 'Opravy sú plne zahrnuté v predplatnom — bez príplatkov. Pri havárii zavoláte na našu linku 24/7 a technik dorazí do 4 hodín v pracovný deň. Ak opravu nemožno vykonať okamžite, zabezpečíme náhradné riešenie.'
+      },
+      {
+        q: 'Môžem zmluvu predčasne ukončiť?',
+        a: 'Predčasné ukončenie je možné za podmienok uvedených v zmluve. Štandardne je spojené s odkúpením zariadenia za zostatkovú cenu alebo s odstupným zodpovedajúcim zostávajúcim mesiacom. Presné podmienky preberieme individuálne.'
+      },
+      {
+        q: 'Ktoré značky klimatizácií ponúkate?',
+        a: 'Spolupracujeme s poprednými výrobcami inverterových jednotiek — Mitsubishi Electric, Daikin, LG a Fujitsu. Konkrétny model odporúčame na základe veľkosti a dispozícií vášho objektu.'
+      },
+      {
+        q: 'Funguje Clima aj pre Slovensko?',
+        a: 'Áno, Clima poskytuje služby v celej Českej republike a na Slovensku. Zmluvy a fakturácia sú dostupné v CZK aj EUR. Pre slovenských klientov máme sieť certifikovaných partnerov.'
+      },
+      {
+        q: 'Čo zahŕňa pravidelná údržba?',
+        a: 'Pravidelný preventívny servis zahŕňa: čistenie filtrov a výparníka, kontrolu chladiva, kalibráciu termostatu, vizuálnu inšpekciu spojov a elektroinštalácie a testovaciu prevádzku s protokolom.'
+      },
+    ]
+  };
+
+  function renderFaq(lang) {
+    const faqList = document.getElementById('faq-list');
+    faqList.innerHTML = '';
+    const items = faqsData[lang] || faqsData.cz;
+    items.forEach((item, i) => {
+      const el = document.createElement('div');
+      el.className = 'faq-item reveal visible';
+      el.innerHTML = `
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>${item.q}</span>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">${item.a}</div>
+        </div>
+      `;
+      faqList.appendChild(el);
+    });
+  }
+
+  renderFaq('cz');
+
+  function toggleFaq(btn) {
+    const answer = btn.nextElementSibling;
+    const icon = btn.querySelector('.faq-icon');
+    const isOpen = answer.classList.contains('open');
+    // Close all
+    document.querySelectorAll('.faq-answer.open').forEach(a => {
+      a.classList.remove('open');
+      a.previousElementSibling.querySelector('.faq-icon').textContent = '+';
+      a.previousElementSibling.querySelector('.faq-icon').style.background = '';
+      a.previousElementSibling.querySelector('.faq-icon').style.color = '';
+    });
+    if (!isOpen) {
+      answer.classList.add('open');
+      icon.textContent = '−';
+      icon.style.background = 'var(--teal-deep)';
+      icon.style.color = 'white';
+    }
+  }
+
+  // ─── SCROLL REVEAL ───
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  revealEls.forEach(el => observer.observe(el));
+
+  // ─── STICKY NAV ───
+  window.addEventListener('scroll', () => {
+    const nav = document.getElementById('navbar');
+    if (window.scrollY > 10) {
+      nav.style.boxShadow = '0 2px 0 var(--teal-deep)';
+    } else {
+      nav.style.boxShadow = 'none';
+    }
+  });
+
+  // ─── FORM SUBMIT ───
+  function handleSubmit(e) {
+    e.preventDefault();
+    document.getElementById('contact-form').style.display = 'none';
+    document.getElementById('form-success').style.display = 'block';
+  }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+/* Force all reveal elements visible for screenshots */
+.reveal { opacity: 1 !important; transform: none !important; }
+</style>
+</head>
+<body style="margin:0;">
+<script>
+fetch('/index.html').then(r => r.text()).then(html => {
+  // Remove min-height from hero for full-page view
+  html = html.replace('min-height: calc(100vh - 68px)', 'min-height: 600px');
+  document.open(); document.write(html); document.close();
+  // Force all reveals visible
+  setTimeout(() => {
+    document.querySelectorAll('.reveal').forEach(el => {
+      el.classList.add('visible');
+    });
+  }, 500);
+});
+</script>
+</body>
+</html>

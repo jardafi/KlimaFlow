@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KlimaFlow pro SVJ — Klimatizace jako předplatné pro bytové domy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --orange: #FF6B35; --teal-deep: #0F292F; --teal-bright: #14A098;
+      --slate: #546E7A; --bg: #F5F7F8; --surface: #FFFFFF; --border: #D8E0E3;
+      --shadow: 4px 4px 0 var(--teal-deep);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--teal-deep); }
+    .btn { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 8px; padding: 13px 26px; background: var(--orange); color: white; border: 2px solid var(--teal-deep); border-radius: 2px; box-shadow: var(--shadow); text-decoration: none; transition: transform 0.12s, box-shadow 0.12s; }
+    .btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--teal-deep); }
+    .btn-outline { background: transparent; color: var(--teal-deep); }
+    .btn-outline:hover { background: var(--teal-deep); color: white; }
+    .check::before { content: ''; display: inline-block; width: 18px; height: 18px; background: var(--teal-bright); border: 2px solid var(--teal-deep); border-radius: 2px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='white'%3E%3Cpath fill-rule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z'/%3E%3C/svg%3E"); background-size: 12px; background-repeat: no-repeat; background-position: center; flex-shrink: 0; margin-top: 2px; }
+    .check { display: flex; align-items: flex-start; gap: 10px; font-size: 15px; line-height: 1.6; }
+    .card { padding: 28px; background: white; border: 2px solid var(--teal-deep); border-radius: 2px; box-shadow: var(--shadow); }
+    .tag { display: inline-block; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 10px; border: 1.5px solid var(--teal-bright); border-radius: 2px; color: var(--teal-bright); margin-bottom: 10px; }
+    .step-num { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 48px; line-height: 1; color: rgba(20,160,152,0.15); margin-bottom: -8px; }
+    .faq-item { border: 2px solid var(--border); border-radius: 2px; overflow: hidden; }
+    .faq-q { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; padding: 18px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px; background: white; }
+    .faq-q:hover { background: var(--bg); }
+    .faq-a { font-size: 14px; line-height: 1.7; color: var(--slate); padding: 0 20px 18px; background: white; display: none; }
+    .faq-item.open .faq-a { display: block; }
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
+    .faq-icon { transition: transform 0.2s; flex-shrink: 0; }
+    @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr !important; } .process-grid { flex-direction: column; } }
+  </style>
+</head>
+<body>
+  <!-- Nav -->
+  <nav style="position:sticky;top:0;z-index:100;background:white;border-bottom:2px solid var(--teal-deep);padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;">
+    <a href="index.html" style="text-decoration:none;display:inline-flex;align-items:center;">
+      <svg viewBox="0 0 182 46" width="160" height="40" xmlns="http://www.w3.org/2000/svg">
+        <text x="0" y="30" font-family="'Outfit',sans-serif" font-weight="700" font-size="27" fill="#0F292F" letter-spacing="-0.5">Klima</text>
+        <circle cx="75" cy="13" r="4" stroke="#FF6B35" stroke-width="1.8" fill="none"/>
+        <text x="82" y="30" font-family="'Outfit',sans-serif" font-weight="300" font-size="27" fill="#C2CCCD" letter-spacing="-0.5">Flow</text>
+        <text x="0" y="44" font-family="'Space Grotesk',sans-serif" font-weight="600" font-size="8.5" fill="#546E7A" textLength="182" lengthAdjust="spacing">KLIMATIZACE NA PŘEDPLATNÉ</text>
+      </svg>
+    </a>
+    <a href="index.html" style="font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;color:var(--slate);text-decoration:none;">← Zpět na hlavní stránku</a>
+  </nav>
+
+  <!-- Hero -->
+  <section style="background:var(--teal-deep);padding:80px 24px 100px;position:relative;overflow:hidden;">
+    <div style="position:absolute;top:-100px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(20,160,152,0.18) 0%,transparent 70%);pointer-events:none;"></div>
+    <div style="position:absolute;bottom:-60px;left:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(255,107,53,0.1) 0%,transparent 70%);pointer-events:none;"></div>
+    <div style="max-width:900px;margin:0 auto;position:relative;z-index:2;">
+      <span style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--teal-bright);display:flex;align-items:center;gap:10px;margin-bottom:20px;"><span style="width:24px;height:2px;background:var(--teal-bright);display:inline-block;"></span>SVJ — Společenství vlastníků</span>
+      <h1 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(36px,5vw,58px);color:white;line-height:1.1;letter-spacing:-0.03em;margin-bottom:24px;">Klimatizace pro celý dům<br/><span style="color:var(--orange);">bez hlasování o investici.</span></h1>
+      <p style="color:rgba(255,255,255,0.72);font-size:18px;line-height:1.75;max-width:600px;margin-bottom:40px;">KlimaFlow zajistí moderní klimatizaci pro každý byt formou měsíčního předplatného. Výbor SVJ neřeší investici, servis ani opravy — to je naše starost.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;">
+        <a href="index.html#kontakt" class="btn">Získat nezávaznou nabídku <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        <a href="#jak-to-funguje" class="btn btn-outline">Jak to funguje</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats strip -->
+  <div style="background:var(--orange);border-top:2px solid var(--teal-deep);border-bottom:2px solid var(--teal-deep);">
+    <div style="max-width:900px;margin:0 auto;padding:20px 24px;display:grid;grid-template-columns:repeat(3,1fr);gap:0;">
+      <div style="text-align:center;padding:12px 0;border-right:1px solid rgba(15,41,47,0.2);">
+        <div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:32px;color:white;letter-spacing:-0.03em;">0 Kč</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:rgba(255,255,255,0.75);margin-top:2px;">počáteční investice</div>
+      </div>
+      <div style="text-align:center;padding:12px 0;border-right:1px solid rgba(15,41,47,0.2);">
+        <div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:32px;color:white;letter-spacing:-0.03em;">3–7</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:rgba(255,255,255,0.75);margin-top:2px;">pracovní dní instalace</div>
+      </div>
+      <div style="text-align:center;padding:12px 0;">
+        <div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:32px;color:white;letter-spacing:-0.03em;">24/7</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:rgba(255,255,255,0.75);margin-top:2px;">havarijní linka</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Why KlimaFlow for SVJ -->
+  <section style="padding:80px 24px;max-width:900px;margin:0 auto;">
+    <div style="margin-bottom:48px;">
+      <div class="tag">Proč KlimaFlow</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(28px,4vw,36px);margin-bottom:16px;">Řešení šité na míru SVJ</h2>
+      <p style="color:var(--slate);font-size:16px;line-height:1.75;max-width:600px;">Klimatizace v bytovém domě bývá zdrojem sporů — kdo zaplatí, kdo povolí průchod zeď, kdo zajistí servis. KlimaFlow tyto třecí plochy eliminuje.</p>
+    </div>
+
+    <div class="grid-2" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:60px;">
+      <div class="card">
+        <div style="width:44px;height:44px;background:var(--teal-bright);border:2px solid var(--teal-deep);border-radius:2px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        </div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;margin-bottom:10px;">Žádné hlasování o investici</div>
+        <p style="color:var(--slate);font-size:14px;line-height:1.65;">Klimatizace jako provozní náklad (opex) nevyžaduje souhlas nadpoloviční většiny vlastníků dle NOZ. Předplatné může platit každý byt zvlášť nebo celé SVJ z fondu.</p>
+      </div>
+      <div class="card">
+        <div style="width:44px;height:44px;background:var(--orange);border:2px solid var(--teal-deep);border-radius:2px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;margin-bottom:10px;">Servis bez práce pro výbor</div>
+        <p style="color:var(--slate);font-size:14px;line-height:1.65;">Poruchy, pravidelná údržba a opravy řeší KlimaFlow — výbor nemusí shánět servisní firmu, dohlížet na záruky ani koordinovat techniky s nájemníky.</p>
+      </div>
+      <div class="card">
+        <div style="width:44px;height:44px;background:var(--teal-deep);border:2px solid var(--teal-deep);border-radius:2px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        </div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;margin-bottom:10px;">Flexibilní model fakturace</div>
+        <p style="color:var(--slate);font-size:14px;line-height:1.65;">Fakturujeme buď celkový dům na SVJ s rozpočítáním dle bytů, nebo každou jednotku zvlášť přímo vlastníkovi. Přizpůsobíme se vašemu modelu správy.</p>
+      </div>
+      <div class="card">
+        <div style="width:44px;height:44px;background:var(--teal-bright);border:2px solid var(--teal-deep);border-radius:2px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;margin-bottom:10px;">Rychlá instalace</div>
+        <p style="color:var(--slate);font-size:14px;line-height:1.65;">Standardní bytový dům instalujeme do 3–7 pracovních dní. Koordinujeme vše s výborem, zásahy do společných prostor minimalizujeme a po sobě uklidíme.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section id="jak-to-funguje" style="background:var(--teal-deep);padding:80px 24px;">
+    <div style="max-width:900px;margin:0 auto;">
+      <div style="margin-bottom:48px;">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--teal-bright);display:flex;align-items:center;gap:10px;margin-bottom:14px;"><span style="width:24px;height:2px;background:var(--teal-bright);display:inline-block;"></span>Postup</div>
+        <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(26px,4vw,34px);color:white;margin-bottom:12px;">Od prvního kontaktu po fungující klimatizaci</h2>
+        <p style="color:rgba(255,255,255,0.6);font-size:16px;line-height:1.7;max-width:560px;">Celý proces zvládneme za méně než 2 týdny — výbor SVJ řeší jen minimum věcí.</p>
+      </div>
+
+      <div class="process-grid" style="display:flex;flex-direction:column;gap:0;">
+        <div style="display:flex;gap:24px;align-items:flex-start;padding-bottom:40px;position:relative;">
+          <div style="position:absolute;left:23px;top:48px;bottom:0;width:2px;background:rgba(20,160,152,0.3);"></div>
+          <div style="width:48px;height:48px;background:var(--orange);border:2px solid rgba(255,255,255,0.3);border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1;">
+            <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px;color:white;">1</span>
+          </div>
+          <div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;color:white;margin-bottom:8px;">Nezávazná poptávka a prohlídka</div>
+            <p style="color:rgba(255,255,255,0.6);font-size:14px;line-height:1.65;">Vyplníte formulář nebo nás zavoláte. Do 24 hodin se ozveme a domluvíme bezplatnou technickou prohlídku objektu. Zjistíme počet bytů, dispozice a požadavky výboru.</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:24px;align-items:flex-start;padding-bottom:40px;position:relative;">
+          <div style="position:absolute;left:23px;top:48px;bottom:0;width:2px;background:rgba(20,160,152,0.3);"></div>
+          <div style="width:48px;height:48px;background:var(--teal-bright);border:2px solid rgba(255,255,255,0.3);border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1;">
+            <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px;color:white;">2</span>
+          </div>
+          <div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;color:white;margin-bottom:8px;">Nabídka na míru do 48 hodin</div>
+            <p style="color:rgba(255,255,255,0.6);font-size:14px;line-height:1.65;">Připravíme přesnou kalkulaci dle počtu bytů, vybraného tarifu a délky smlouvy. Nabídka zahrnuje technické schéma, harmonogram instalace a podmínky smlouvy.</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:24px;align-items:flex-start;padding-bottom:40px;position:relative;">
+          <div style="position:absolute;left:23px;top:48px;bottom:0;width:2px;background:rgba(20,160,152,0.3);"></div>
+          <div style="width:48px;height:48px;background:rgba(255,255,255,0.15);border:2px solid rgba(255,255,255,0.3);border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1;">
+            <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px;color:white;">3</span>
+          </div>
+          <div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;color:white;margin-bottom:8px;">Podpis smlouvy s výborem</div>
+            <p style="color:rgba(255,255,255,0.6);font-size:14px;line-height:1.65;">Smlouva je uzavřena s výborem SVJ. Mohou se připojit i jednotliví vlastníci, kteří chtějí klimatizaci jen pro svůj byt — bez nutnosti souhlasu celého domu.</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:24px;align-items:flex-start;">
+          <div style="width:48px;height:48px;background:var(--orange);border:2px solid rgba(255,255,255,0.3);border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;color:white;margin-bottom:8px;">Instalace a spuštění</div>
+            <p style="color:rgba(255,255,255,0.6);font-size:14px;line-height:1.65;">Naši technici pracují byt po bytu dle dohodnutého harmonogramu. Celý dům je hotový do 3–7 pracovních dní. Předseda SVJ obdrží protokol o každé instalaci.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What's included -->
+  <section style="padding:80px 24px;max-width:900px;margin:0 auto;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;" class="grid-2">
+      <div>
+        <div class="tag">Co je v ceně</div>
+        <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(24px,3.5vw,30px);margin-bottom:24px;">Vše zahrnuto, žádná překvapení</h2>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div class="check">Prémiové inverterové klimatizační jednotky</div>
+          <div class="check">Kompletní instalace certifikovanými techniky</div>
+          <div class="check">Pravidelný servis: čištění filtrů, kontrola chladiva, prohlídka</div>
+          <div class="check">Všechny opravy a náhradní díly po celou dobu smlouvy</div>
+          <div class="check">Výměna zařízení při neopravitelné poruše</div>
+          <div class="check">Havarijní linka 24/7, výjezd technika do 4 hodin v pracovní den</div>
+          <div class="check">Koordinace s výborem a vlastníky při každém zásahu</div>
+        </div>
+      </div>
+      <div>
+        <div class="tag">Není zahrnuto</div>
+        <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(24px,3.5vw,30px);margin-bottom:24px;">Za co neplatíte</h2>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;align-items:flex-start;gap:10px;font-size:15px;line-height:1.6;">
+            <span style="width:18px;height:18px;background:rgba(255,107,53,0.1);border:2px solid var(--orange);border-radius:2px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </span>
+            Pořizovací cena zařízení
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;font-size:15px;line-height:1.6;">
+            <span style="width:18px;height:18px;background:rgba(255,107,53,0.1);border:2px solid var(--orange);border-radius:2px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </span>
+            Náhradní díly a opravy
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;font-size:15px;line-height:1.6;">
+            <span style="width:18px;height:18px;background:rgba(255,107,53,0.1);border:2px solid var(--orange);border-radius:2px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </span>
+            Servisní výjezdy a práce techniků
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;font-size:15px;line-height:1.6;">
+            <span style="width:18px;height:18px;background:rgba(255,107,53,0.1);border:2px solid var(--orange);border-radius:2px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </span>
+            Správní agenda a komunikace se servisem
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;font-size:15px;line-height:1.6;">
+            <span style="width:18px;height:18px;background:rgba(255,107,53,0.1);border:2px solid var(--orange);border-radius:2px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </span>
+            Starosti výboru se zárukami
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section style="background:var(--bg);padding:80px 24px;border-top:2px solid var(--border);">
+    <div style="max-width:720px;margin:0 auto;">
+      <div class="tag" style="margin-bottom:12px;">Časté otázky</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(26px,4vw,32px);margin-bottom:40px;">Co se výborů SVJ ptají nejčastěji</h2>
+      <div style="display:flex;flex-direction:column;gap:8px;" id="faq">
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            Potřebujeme souhlas nadpoloviční většiny vlastníků?
+            <svg class="faq-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div class="faq-a">Ne. Klimatizace jako opex (provozní náklad) nevyžaduje hlasování o investici dle § 1214 NOZ. Výbor SVJ může uzavřít smlouvu o předplatném v rámci svých kompetencí. Doporučujeme konzultaci s vaším právníkem, rádi poskytneme vzorové dokumenty.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            Musí se zapojit všechny byty, nebo jen část?
+            <svg class="faq-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div class="faq-a">Pracujeme oběma způsoby. Ideální je celý dům — snižuje to cenu na byt a instalace proběhne v jednom bloku. Zároveň umožňujeme, aby se připojily jen zájemci. Minimální počet jednotek na smlouvu je 5.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            Co se stane, když byt změní majitele?
+            <svg class="faq-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div class="faq-a">Smlouva se standardně převádí na nového vlastníka jako součást bytu — klimatizace zůstává v bytě, nový majitel přebírá předplatné. Alternativně lze smlouvu ukončit a jednotku demontovat. Konkrétní podmínky jsou vždy součástí smlouvy.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            Kdo zajišťuje stavební povolení a průchod zdí?
+            <svg class="faq-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div class="faq-a">KlimaFlow zajišťuje veškerou koordinaci s úřady a vyřízení potřebné dokumentace pro instalaci do fasády nebo střechy. U standardní instalace na balkón nebo vnější stěnu bytu není povolení zpravidla potřeba. Složitější případy řešíme individuálně.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            Jak probíhá servis — musíme koordinovat přístup k bytům?
+            <svg class="faq-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div class="faq-a">Servisní termíny dohadujeme přímo s každým vlastníkem nebo nájemníkem — výbor SVJ do toho nemusí vstupovat. U havarijního zásahu kontaktuje technika přímo obyvatel bytu přes naši havarijní linku.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section style="padding:80px 24px;max-width:900px;margin:0 auto;">
+    <div style="background:var(--teal-deep);border-radius:2px;padding:56px 48px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-80px;right:-80px;width:300px;height:300px;background:radial-gradient(circle,rgba(20,160,152,0.2) 0%,transparent 70%);pointer-events:none;"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:32px;position:relative;z-index:1;">
+        <div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(22px,3vw,28px);color:white;margin-bottom:10px;">Připraveni začít?</div>
+          <p style="color:rgba(255,255,255,0.65);font-size:15px;line-height:1.65;max-width:420px;">Pošlete nám nezávaznou poptávku s počtem bytů a dostanete konkrétní cenovou nabídku do 24 hodin.</p>
+        </div>
+        <a href="index.html#kontakt" class="btn">Nezávazná poptávka <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      </div>
+    </div>
+  </section>
+
+  <footer style="background:var(--teal-deep);border-top:2px solid rgba(255,255,255,0.1);padding:32px 24px;text-align:center;">
+    <span style="color:rgba(255,255,255,0.3);font-size:13px;">© 2026 KlimaFlow s.r.o.</span>
+  </footer>
+
+  <script>
+    function toggleFaq(el) {
+      const item = el.parentElement;
+      item.classList.toggle('open');
+    }
+  </script>
+</body>
+</html>
