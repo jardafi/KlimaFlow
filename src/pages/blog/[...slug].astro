@@ -236,7 +236,7 @@ const ogImage = post.data.coverImage || '/og-image.png';
   </div>
 </footer>
 
-<script>
+<script is:inline>
   window.addEventListener('scroll', () => {
     const nav = document.getElementById('navbar');
     if (nav) nav.style.boxShadow = window.scrollY > 10 ? '0 2px 0 var(--teal-deep)' : 'none';
