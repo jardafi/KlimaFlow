@@ -3,7 +3,91 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KlimaFlow — Klimatizace jako předplatné</title>
+  <title>KlimaFlow — Klimatizace jako předplatné pro SVJ, bytová družstva a kanceláře</title>
+  <meta name="description" content="Klimatizace jako měsíční předplatné — nulová investice, instalace, servis a opravy v ceně. Pro SVJ, bytová družstva, developery a kanceláře v ČR a SR." />
+  <link rel="canonical" href="https://klimaflow.cz/" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://klimaflow.cz/" />
+  <meta property="og:title" content="KlimaFlow — Klimatizace jako předplatné" />
+  <meta property="og:description" content="Nulová investice, instalace, servis a opravy v ceně. Klimatizace na předplatné pro SVJ, bytová družstva, developery a kanceláře." />
+  <meta property="og:image" content="https://klimaflow.cz/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="KlimaFlow" />
+  <meta property="og:locale" content="cs_CZ" />
+  <meta property="og:locale:alternate" content="sk_SK" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="KlimaFlow — Klimatizace jako předplatné" />
+  <meta name="twitter:description" content="Nulová investice, instalace, servis a opravy v ceně. Klimatizace na předplatné pro SVJ, bytová družstva, developery a kanceláře." />
+  <meta name="twitter:image" content="https://klimaflow.cz/og-image.png" />
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <meta name="theme-color" content="#FF6B35" />
+  <meta name="msapplication-TileColor" content="#0F292F" />
+
+  <!-- JSON-LD: Organization -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "KlimaFlow",
+    "url": "https://klimaflow.cz",
+    "logo": "https://klimaflow.cz/favicon.svg",
+    "description": "Klimatizace jako předplatná služba pro SVJ, bytová družstva, developery a kancelářské prostory v ČR a SR.",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "email": "info@klimaflow.cz",
+      "contactType": "customer service",
+      "availableLanguage": ["Czech", "Slovak"]
+    },
+    "areaServed": [
+      {"@type": "Country", "name": "Czech Republic"},
+      {"@type": "Country", "name": "Slovakia"}
+    ]
+  }
+  </script>
+  <!-- JSON-LD: WebSite -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "KlimaFlow",
+    "url": "https://klimaflow.cz",
+    "description": "Klimatizace jako předplatné — nulová investice, servis v ceně.",
+    "inLanguage": ["cs", "sk"],
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://klimaflow.cz/blog?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+  <!-- JSON-LD: Service -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "Klimatizace jako předplatné",
+    "provider": {"@type": "Organization", "name": "KlimaFlow"},
+    "description": "Prémiové klimatizační systémy Mitsubishi Electric, Daikin a LG formou měsíčního předplatného. Zahrnuje instalaci, servis a opravy.",
+    "areaServed": ["Czech Republic", "Slovakia"],
+    "audience": {
+      "@type": "Audience",
+      "audienceType": "SVJ, bytová družstva, developeři, kanceláře"
+    }
+  }
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
@@ -438,6 +522,11 @@
     /* ─── MOBILE NAV ─── */
     #mobile-menu { display: none; }
     #mobile-menu.open { display: flex; }
+    #hamburger { display: none; flex-direction: column; justify-content: center; align-items: center; gap: 5px; width: 40px; height: 40px; border: 2px solid var(--teal-deep); border-radius: 2px; background: transparent; cursor: pointer; padding: 0; flex-shrink: 0; }
+    #hamburger span { display: block; width: 18px; height: 2px; background: var(--teal-deep); border-radius: 0; transition: transform 0.2s ease, opacity 0.2s ease; }
+    #hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    #hamburger.open span:nth-child(2) { opacity: 0; }
+    #hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
     /* ─── TICKER TAPE ─── */
     @keyframes ticker {
@@ -575,6 +664,11 @@
 
     /* ─── RESPONSIVE BREAKPOINTS ─── */
     @media (max-width: 768px) {
+      /* Nav: hide desktop links, show hamburger */
+      .desktop-nav { display: none !important; }
+      #nav-lang { display: none !important; }
+      #nav-cta-desktop { display: none !important; }
+      #hamburger { display: flex !important; }
       /* About section stacks on mobile */
       #about-section { grid-template-columns: 1fr !important; }
       #about-photo { min-height: 320px !important; }
@@ -634,21 +728,55 @@
       <a href="#vyhody" class="nav-link" data-i18n="nav_benefits">Výhody</a>
       <a href="#kalkulacka" class="nav-link" data-i18n="nav_calc">Kalkulačka</a>
       <a href="#faq" class="nav-link">FAQ</a>
+      <a href="/blog" class="nav-link">Blog</a>
     </div>
 
     <div style="display: flex; align-items: center; gap: 12px;">
       <!-- Language toggle -->
-      <div style="display:flex;gap:0;" title="Jazyk / Jazyk">
+      <div id="nav-lang" style="display:flex;gap:0;" title="Jazyk / Jazyk">
         <button id="lang-cz-btn" onclick="setPageLang('cz')" class="lang-switch active">CZ</button>
         <button id="lang-sk-btn" onclick="setPageLang('sk')" class="lang-switch">SK</button>
       </div>
-      <a href="#kontakt" class="btn-primary" style="padding: 10px 20px; font-size: 13px;" data-i18n="nav_cta">
+      <a id="nav-cta-desktop" href="#kontakt" class="btn-primary" style="padding: 10px 20px; font-size: 13px;" data-i18n="nav_cta">
         Nezávazná poptávka
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
+      <!-- Mobile hamburger -->
+      <button id="hamburger" onclick="toggleMobileMenu()" aria-label="Otevřít menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </div>
 </nav>
+
+<!-- ══════════════════════════════
+     MOBILE MENU
+══════════════════════════════ -->
+<div id="mobile-menu" style="
+  flex-direction: column;
+  gap: 0;
+  position: fixed;
+  top: 70px;
+  left: 0; right: 0;
+  background: white;
+  border-bottom: 2px solid var(--teal-deep);
+  z-index: 99;
+  padding: 8px 0 16px;
+  box-shadow: 0 8px 32px rgba(15,41,47,0.12);
+">
+  <a href="#jak-to-funguje" class="nav-link" onclick="closeMobileMenu()" style="display:block;padding:14px 24px;font-size:15px;border-bottom:1px solid var(--border);" data-i18n="nav_how">Jak to funguje</a>
+  <a href="#pro-koho" class="nav-link" onclick="closeMobileMenu()" style="display:block;padding:14px 24px;font-size:15px;border-bottom:1px solid var(--border);" data-i18n="nav_for_whom">Pro koho</a>
+  <a href="#vyhody" class="nav-link" onclick="closeMobileMenu()" style="display:block;padding:14px 24px;font-size:15px;border-bottom:1px solid var(--border);" data-i18n="nav_benefits">Výhody</a>
+  <a href="#kalkulacka" class="nav-link" onclick="closeMobileMenu()" style="display:block;padding:14px 24px;font-size:15px;border-bottom:1px solid var(--border);" data-i18n="nav_calc">Kalkulačka</a>
+  <a href="#faq" class="nav-link" onclick="closeMobileMenu()" style="display:block;padding:14px 24px;font-size:15px;border-bottom:1px solid var(--border);">FAQ</a>
+  <a href="/blog" class="nav-link" onclick="closeMobileMenu()" style="display:block;padding:14px 24px;font-size:15px;border-bottom:1px solid var(--border);">Blog</a>
+  <div style="padding:16px 24px 0;">
+    <a href="#kontakt" onclick="closeMobileMenu()" class="btn-primary" style="width:100%;justify-content:center;font-size:14px;">
+      Nezávazná poptávka
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</div>
 
 <!-- ══════════════════════════════
      HERO
@@ -678,12 +806,6 @@
     pointer-events: none;
   "></div>
 
-  <!-- Decorative teal vertical bar far left -->
-  <div style="
-    position: absolute; left: 0; top: 0; bottom: 0;
-    width: 4px; background: var(--teal-bright);
-    pointer-events: none;
-  "></div>
 
   <div style="max-width: 1200px; margin: 0 auto; padding: 40px 24px 80px; position: relative; z-index: 2; width: 100%;">
     <div id="hero-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;">
@@ -1424,7 +1546,7 @@
             </div>
             <div>
               <div style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 15px;">Napište e-mail</div>
-              <div style="color: var(--slate); font-size: 14px;">info@clima.cz</div>
+              <div style="color: var(--slate); font-size: 14px;">info@klimaflow.cz</div>
             </div>
           </div>
           <div class="reveal reveal-delay-2" style="display: flex; align-items: center; gap: 16px;">
@@ -1547,6 +1669,7 @@
         <div style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 16px;">Firma</div>
         <div style="display: flex; flex-direction: column; gap: 10px;">
           <a href="#jak-to-funguje" style="color: rgba(255,255,255,0.65); font-size: 14px; text-decoration: none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Jak to funguje</a>
+          <a href="/blog" style="color: rgba(255,255,255,0.65); font-size: 14px; text-decoration: none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Blog</a>
           <a href="#faq" style="color: rgba(255,255,255,0.65); font-size: 14px; text-decoration: none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">FAQ</a>
           <a href="#kontakt" style="color: rgba(255,255,255,0.65); font-size: 14px; text-decoration: none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Kontakt</a>
         </div>
@@ -1556,15 +1679,15 @@
       <div>
         <div style="font-family: 'Space Grotesk'; font-weight: 600; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 16px;">Kontakt</div>
         <div style="display: flex; flex-direction: column; gap: 10px;">
-          <span style="color: rgba(255,255,255,0.65); font-size: 14px;">info@clima.cz</span>
+          <span style="color: rgba(255,255,255,0.65); font-size: 14px;">info@klimaflow.cz</span>
           <span style="color: rgba(255,255,255,0.65); font-size: 14px;">+420 XXX XXX XXX</span>
-          <span style="color: rgba(255,255,255,0.65); font-size: 14px;">Praha, Česká republika</span>
+          <span style="color: rgba(255,255,255,0.65); font-size: 14px;">Česká republika &amp; Slovensko</span>
         </div>
       </div>
     </div>
 
     <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
-      <span style="color: rgba(255,255,255,0.3); font-size: 13px;">© 2026 Clima s.r.o. Všechna práva vyhrazena.</span>
+      <span style="color: rgba(255,255,255,0.3); font-size: 13px;">© 2026 KlimaFlow s.r.o. Všechna práva vyhrazena.</span>
       <div style="display: flex; gap: 20px;">
         <a href="#" style="color: rgba(255,255,255,0.3); font-size: 13px; text-decoration: none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">Ochrana osobních údajů</a>
         <a href="#" style="color: rgba(255,255,255,0.3); font-size: 13px; text-decoration: none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">Obchodní podmínky</a>
@@ -2145,6 +2268,32 @@
     });
   }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
   revealEls.forEach(el => observer.observe(el));
+
+  // ─── MOBILE MENU ───
+  function toggleMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    const btn = document.getElementById('hamburger');
+    const isOpen = menu.classList.toggle('open');
+    btn.classList.toggle('open', isOpen);
+    btn.setAttribute('aria-expanded', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  }
+  function closeMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    const btn = document.getElementById('hamburger');
+    menu.classList.remove('open');
+    btn.classList.remove('open');
+    btn.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+  // Close menu on outside click
+  document.addEventListener('click', (e) => {
+    const menu = document.getElementById('mobile-menu');
+    const btn = document.getElementById('hamburger');
+    if (menu.classList.contains('open') && !menu.contains(e.target) && !btn.contains(e.target)) {
+      closeMobileMenu();
+    }
+  });
 
   // ─── STICKY NAV ───
   window.addEventListener('scroll', () => {

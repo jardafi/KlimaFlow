@@ -1,0 +1,228 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(post => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+// FAQ schema.org — generated from frontmatter faqs array
+const faqSchema = post.data.faqs && post.data.faqs.length > 0
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: post.data.faqs.map((faq: { q: string; a: string }) => ({
+        '@type': 'Question',
+        name: faq.q,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.a,
+        },
+      })),
+    }
+  : null;
+
+const CATEGORY_LABELS: Record<string, string> = {
+  klimatizace: 'Klimatizace',
+  uspory: 'Úspory energie',
+  svj: 'SVJ a bytová družstva',
+  developeri: 'Developeři',
+  kancelare: 'Kanceláře',
+};
+
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('cs-CZ', {
+    day: 'numeric', month: 'long', year: 'numeric',
+  });
+}
+
+const canonicalUrl = `https://klimaflow.cz/blog/${post.slug}`;
+const ogImage = post.data.coverImage || '/og-image.png';
+---
+
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description}
+  canonical={canonicalUrl}
+  ogImage={ogImage}
+  type="article"
+  article={{
+    publishedTime: post.data.publishDate.toISOString(),
+    author: post.data.author,
+    section: CATEGORY_LABELS[post.data.category],
+  }}
+  breadcrumbs={[
+    { name: 'Hlavní stránka', url: '/' },
+    { name: 'Blog', url: '/blog' },
+    { name: post.data.title, url: `/blog/${post.slug}` },
+  ]}
+  extraSchema={faqSchema}
+>
+
+<!-- NAV -->
+<nav id="navbar" style="position:sticky;top:0;z-index:100;background:white;border-bottom:2px solid var(--teal-deep);transition:box-shadow 0.2s ease;">
+  <div style="max-width:1200px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;gap:24px;">
+    <a href="/" style="text-decoration:none;display:inline-flex;align-items:center;">
+      <svg viewBox="0 0 182 46" width="182" height="46" xmlns="http://www.w3.org/2000/svg">
+        <text x="0" y="30" font-family="'Outfit',sans-serif" font-weight="700" font-size="27" fill="#0F292F" letter-spacing="-0.5">Klima</text>
+        <circle cx="75" cy="13" r="4" stroke="#FF6B35" stroke-width="1.8" fill="none"/>
+        <text x="82" y="30" font-family="'Outfit',sans-serif" font-weight="300" font-size="27" fill="#C2CCCD" letter-spacing="-0.5">Flow</text>
+        <text x="0" y="44" font-family="'Space Grotesk',sans-serif" font-weight="600" font-size="8.5" fill="#546E7A" textLength="182" lengthAdjust="spacing">KLIMATIZACE NA PŘEDPLATNÉ</text>
+      </svg>
+    </a>
+    <div style="display:flex;align-items:center;gap:32px;">
+      <a href="/#jak-to-funguje" class="nav-link">Jak to funguje</a>
+      <a href="/#pro-koho" class="nav-link">Pro koho</a>
+      <a href="/blog" class="nav-link">Blog</a>
+    </div>
+    <a href="/#kontakt" class="btn-primary" style="padding:10px 20px;font-size:13px;">
+      Nezávazná poptávka
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- ARTICLE HERO -->
+<section style="background:var(--teal-deep);padding:60px 24px 72px;position:relative;overflow:hidden;" class="grid-texture-dark">
+  <div style="position:absolute;top:-100px;right:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(20,160,152,0.15) 0%,transparent 70%);pointer-events:none;"></div>
+  <div style="max-width:800px;margin:0 auto;position:relative;z-index:2;">
+    <!-- Breadcrumb -->
+    <nav aria-label="Breadcrumb" style="margin-bottom:28px;">
+      <ol style="display:flex;align-items:center;gap:8px;list-style:none;margin:0;padding:0;flex-wrap:wrap;">
+        <li><a href="/" style="color:rgba(255,255,255,0.5);font-size:13px;text-decoration:none;font-family:'Space Grotesk',sans-serif;transition:color 0.15s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Hlavní stránka</a></li>
+        <li style="color:rgba(255,255,255,0.25);font-size:13px;">/</li>
+        <li><a href="/blog" style="color:rgba(255,255,255,0.5);font-size:13px;text-decoration:none;font-family:'Space Grotesk',sans-serif;transition:color 0.15s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Blog</a></li>
+        <li style="color:rgba(255,255,255,0.25);font-size:13px;">/</li>
+        <li style="color:rgba(255,255,255,0.7);font-size:13px;font-family:'Space Grotesk',sans-serif;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{post.data.title}</li>
+      </ol>
+    </nav>
+
+    <!-- Category + date -->
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap;">
+      <span class="tag" style="color:var(--orange);border-color:var(--orange);">
+        {CATEGORY_LABELS[post.data.category] || post.data.category}
+      </span>
+      <span style="color:rgba(255,255,255,0.5);font-size:13px;font-family:'Space Grotesk',sans-serif;">
+        {formatDate(post.data.publishDate)}
+      </span>
+      <span style="color:rgba(255,255,255,0.3);font-size:13px;">·</span>
+      <span style="color:rgba(255,255,255,0.5);font-size:13px;font-family:'Space Grotesk',sans-serif;">{post.data.author}</span>
+    </div>
+
+    <!-- Title -->
+    <h1 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(28px,4vw,52px);color:white;line-height:1.15;letter-spacing:-0.03em;margin-bottom:20px;">
+      {post.data.title}
+    </h1>
+
+    <!-- Description -->
+    <p style="color:rgba(255,255,255,0.72);font-size:18px;line-height:1.75;max-width:600px;">
+      {post.data.description}
+    </p>
+  </div>
+</section>
+
+<!-- COVER IMAGE (if exists) -->
+{post.data.coverImage && (
+  <div style="max-width:800px;margin:-40px auto 0;padding:0 24px;position:relative;z-index:10;">
+    <img
+      src={post.data.coverImage}
+      alt={post.data.title}
+      style="width:100%;border:2px solid var(--teal-deep);border-radius:2px;box-shadow:8px 8px 0 var(--teal-deep);display:block;"
+    />
+  </div>
+)}
+
+<!-- ARTICLE BODY -->
+<main style="padding:72px 24px 100px;background:var(--bg);">
+  <div style="max-width:800px;margin:0 auto;display:grid;grid-template-columns:1fr min(720px,100%) 1fr;">
+    <div></div>
+    <article class="prose">
+      <Content />
+    </article>
+    <div></div>
+  </div>
+</main>
+
+<!-- FAQ SECTION -->
+{post.data.faqs && post.data.faqs.length > 0 && (
+  <section style="padding:72px 24px 80px;background:var(--bg);border-top:2px solid #D8E0E3;">
+    <div style="max-width:720px;margin:0 auto;">
+      <span style="font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#14A098;display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+        <span style="display:block;width:24px;height:2px;background:#14A098;"></span>Časté otázky
+      </span>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(26px,3.5vw,38px);color:#0F292F;letter-spacing:-0.03em;margin-bottom:40px;">FAQ</h2>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        {post.data.faqs.map((faq: { q: string; a: string }, i: number) => (
+          <div style="border:2px solid #0F292F;border-radius:2px;overflow:hidden;">
+            <button
+              style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:16px;padding:20px 24px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;background:white;width:100%;text-align:left;border:none;transition:background 0.15s ease;user-select:none;"
+              onclick="(function(b){var body=b.nextElementSibling,icon=b.querySelector('span:last-child'),isOpen=body.style.maxHeight&&body.style.maxHeight!=='0px';document.querySelectorAll('.kf-faq-body').forEach(function(x){x.style.maxHeight='0px';x.style.borderTopWidth='0';x.previousElementSibling.querySelector('span:last-child').textContent='+';x.previousElementSibling.style.background='white';});if(!isOpen){body.style.maxHeight=body.scrollHeight+'px';body.style.borderTopWidth='2px';icon.textContent='−';b.style.background='#F0F4F5';}})(this)"
+              onmouseover="if(this.nextElementSibling.style.maxHeight==='0px'||!this.nextElementSibling.style.maxHeight)this.style.background='#F0F4F5'"
+              onmouseout="if(this.nextElementSibling.style.maxHeight==='0px'||!this.nextElementSibling.style.maxHeight)this.style.background='white'"
+            >
+              <span style="flex:1;">{faq.q}</span>
+              <span style="flex-shrink:0;width:24px;height:24px;border:2px solid #0F292F;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:400;transition:background 0.15s,color 0.15s;line-height:1;">+</span>
+            </button>
+            <div class="kf-faq-body" style="max-height:0;overflow:hidden;transition:max-height 0.35s ease;background:#F8FAFA;border-top:0px solid #0F292F;">
+              <div style="padding:20px 24px;color:#546E7A;font-size:15px;line-height:1.75;">{faq.a}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<!-- CTA STRIP -->
+<section style="background:var(--teal-deep);padding:72px 24px;border-top:2px solid rgba(255,255,255,0.1);" class="grid-texture-dark">
+  <div style="max-width:700px;margin:0 auto;text-align:center;">
+    <span class="section-label" style="color:var(--teal-bright);justify-content:center;margin-bottom:20px;">Připraveni začít?</span>
+    <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(28px,4vw,44px);color:white;letter-spacing:-0.03em;margin-bottom:16px;">
+      Klimatizace bez investice.<br/><span style="color:var(--orange);">Jen měsíční předplatné.</span>
+    </h2>
+    <p style="color:rgba(255,255,255,0.7);font-size:17px;line-height:1.7;max-width:480px;margin:0 auto 40px;">
+      Pošlete nám nezávaznou poptávku — konkrétní cenu pro váš objekt dostanete do 24 hodin.
+    </p>
+    <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;">
+      <a href="/#kontakt" class="btn-primary" style="font-size:15px;">
+        Získat nezávaznou nabídku
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="/blog" class="btn-outline-white" style="font-size:15px;">
+        ← Zpět na blog
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:var(--teal-deep);border-top:2px solid rgba(255,255,255,0.08);padding:40px 24px;" class="grid-texture-dark">
+  <div style="max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+    <a href="/" style="text-decoration:none;display:inline-flex;align-items:center;">
+      <svg viewBox="0 0 182 46" width="140" height="36" xmlns="http://www.w3.org/2000/svg">
+        <text x="0" y="30" font-family="'Outfit',sans-serif" font-weight="700" font-size="27" fill="#ffffff" letter-spacing="-0.5">Klima</text>
+        <circle cx="75" cy="13" r="4" stroke="#FF6B35" stroke-width="1.8" fill="none"/>
+        <text x="82" y="30" font-family="'Outfit',sans-serif" font-weight="300" font-size="27" fill="rgba(255,255,255,0.35)" letter-spacing="-0.5">Flow</text>
+      </svg>
+    </a>
+    <span style="color:rgba(255,255,255,0.3);font-size:13px;">© 2026 KlimaFlow s.r.o.</span>
+  </div>
+</footer>
+
+<script>
+  window.addEventListener('scroll', () => {
+    const nav = document.getElementById('navbar');
+    if (nav) nav.style.boxShadow = window.scrollY > 10 ? '0 2px 0 var(--teal-deep)' : 'none';
+  });
+</script>
+
+</BaseLayout>

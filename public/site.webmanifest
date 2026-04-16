@@ -1,0 +1,28 @@
+{
+  "name": "KlimaFlow — Klimatizace jako předplatné",
+  "short_name": "KlimaFlow",
+  "description": "Klimatizace jako předplatná služba pro SVJ, bytová družstva, developery a kanceláře.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F5F7F8",
+  "theme_color": "#FF6B35",
+  "lang": "cs",
+  "icons": [
+    {
+      "src": "/favicon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

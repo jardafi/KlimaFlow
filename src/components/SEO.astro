@@ -1,0 +1,162 @@
+---
+export interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  lang?: 'cs' | 'sk';
+  ogImage?: string;
+  type?: 'website' | 'article';
+  article?: {
+    publishedTime?: string;
+    author?: string;
+    tags?: string[];
+    section?: string;
+  };
+  noindex?: boolean;
+  breadcrumbs?: Array<{ name: string; url: string }>;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  lang = 'cs',
+  ogImage = '/og-image.png',
+  type = 'website',
+  article,
+  noindex = false,
+  breadcrumbs,
+} = Astro.props;
+
+const SITE_URL = 'https://klimaflow.cz';
+const canonicalUrl = canonical || new URL(Astro.url.pathname, SITE_URL).href;
+const fullOgImage = ogImage.startsWith('http') ? ogImage : `${SITE_URL}${ogImage}`;
+const fullTitle = title.includes('KlimaFlow') ? title : `${title} | KlimaFlow`;
+
+// JSON-LD: Organization (always present)
+const orgSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'KlimaFlow',
+  url: SITE_URL,
+  logo: `${SITE_URL}/favicon.svg`,
+  description: 'Klimatizace jako předplatná služba pro SVJ, bytová družstva, developery a kancelářské prostory v ČR a SR.',
+  contactPoint: {
+    '@type': 'ContactPoint',
+    email: 'info@klimaflow.cz',
+    contactType: 'customer service',
+    availableLanguage: ['Czech', 'Slovak'],
+  },
+  areaServed: [
+    { '@type': 'Country', name: 'Czech Republic' },
+    { '@type': 'Country', name: 'Slovakia' },
+  ],
+};
+
+// JSON-LD: WebSite (on homepage)
+const websiteSchema = type === 'website' && canonicalUrl === `${SITE_URL}/` ? {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'KlimaFlow',
+  url: SITE_URL,
+  description: 'Klimatizace jako předplatné — nulová investice, servis v ceně.',
+  inLanguage: ['cs', 'sk'],
+} : null;
+
+// JSON-LD: Article
+const articleSchema = type === 'article' ? {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description: description,
+  image: fullOgImage,
+  datePublished: article?.publishedTime,
+  author: {
+    '@type': 'Person',
+    name: article?.author || 'KlimaFlow tým',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'KlimaFlow',
+    logo: { '@type': 'ImageObject', url: `${SITE_URL}/favicon.svg` },
+  },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl },
+} : null;
+
+// JSON-LD: BreadcrumbList
+const breadcrumbSchema = breadcrumbs && breadcrumbs.length > 0 ? {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: breadcrumbs.map((item, idx) => ({
+    '@type': 'ListItem',
+    position: idx + 1,
+    name: item.name,
+    item: item.url.startsWith('http') ? item.url : `${SITE_URL}${item.url}`,
+  })),
+} : null;
+---
+
+<!-- Charset & viewport -->
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Primary meta -->
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+{noindex
+  ? <meta name="robots" content="noindex, nofollow" />
+  : <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+}
+<link rel="canonical" href={canonicalUrl} />
+
+<!-- Hreflang — CZ/SK single-domain with JS language switcher -->
+<link rel="alternate" hreflang="cs" href={canonicalUrl} />
+<link rel="alternate" hreflang="sk" href={canonicalUrl} />
+<link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+<!-- Open Graph -->
+<meta property="og:type" content={type} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={fullOgImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:site_name" content="KlimaFlow" />
+<meta property="og:locale" content={lang === 'cs' ? 'cs_CZ' : 'sk_SK'} />
+{lang === 'cs' && <meta property="og:locale:alternate" content="sk_SK" />}
+{lang === 'sk' && <meta property="og:locale:alternate" content="cs_CZ" />}
+
+<!-- Article Open Graph -->
+{type === 'article' && article?.publishedTime && (
+  <meta property="article:published_time" content={article.publishedTime} />
+)}
+{type === 'article' && article?.author && (
+  <meta property="article:author" content={article.author} />
+)}
+{type === 'article' && article?.section && (
+  <meta property="article:section" content={article.section} />
+)}
+{type === 'article' && article?.tags?.map(tag => (
+  <meta property="article:tag" content={tag} />
+))}
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={fullOgImage} />
+
+<!-- Favicons -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<meta name="theme-color" content="#FF6B35" />
+<meta name="msapplication-TileColor" content="#0F292F" />
+
+<!-- JSON-LD Structured Data -->
+<script type="application/ld+json" set:html={JSON.stringify(orgSchema)} />
+{websiteSchema && <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />}
+{articleSchema && <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />}
+{breadcrumbSchema && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />}

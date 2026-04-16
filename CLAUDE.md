@@ -52,3 +52,21 @@
 - Do not stop after one screenshot pass
 - Do not use `transition-all`
 - Do not use default Tailwind blue/indigo as primary color
+
+## Deployment Rules
+
+**Architecture:** Local → GitHub → Vercel (auto-deploy on push)
+
+### Rules
+- **Never push to GitHub without explicit user instruction.** Wait for a clear "deploy" or "push" command.
+- **Always ask for confirmation before any `git push`**, even if the user has previously said to deploy.
+- All changes are tested locally first. Assume `localhost` is the target until told otherwise.
+- Do not run `git push`, open PRs, or trigger any remote operation autonomously.
+
+### Allowed without asking
+- `git add`, `git commit` (local only)
+- Running and modifying code on localhost
+
+### Never do without explicit confirmation
+- `git push`
+- Any action that triggers a Vercel deployment

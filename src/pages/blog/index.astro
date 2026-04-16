@@ -1,0 +1,206 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export const prerender = true;
+
+const allPosts = await getCollection('blog');
+const posts = allPosts.sort(
+  (a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
+);
+
+const CATEGORY_LABELS: Record<string, string> = {
+  klimatizace: 'Klimatizace',
+  uspory: 'Úspory energie',
+  svj: 'SVJ a bytová družstva',
+  developeri: 'Developeři',
+  kancelare: 'Kanceláře',
+};
+
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('cs-CZ', {
+    day: 'numeric', month: 'long', year: 'numeric',
+  });
+}
+
+function readingTime(slug: string): string {
+  return '5 min čtení';
+}
+---
+
+<BaseLayout
+  title="Blog — Klimatizace, úspory energie a předplatné | KlimaFlow"
+  description="Průvodce světem klimatizace jako služby. Články o SVJ, bytových domech, úsporách energie a moderním přístupu k chlazení budov."
+  canonical="https://klimaflow.cz/blog"
+  type="website"
+  breadcrumbs={[
+    { name: 'Hlavní stránka', url: '/' },
+    { name: 'Blog', url: '/blog' },
+  ]}
+>
+
+<!-- NAV -->
+<nav id="navbar" style="position:sticky;top:0;z-index:100;background:white;border-bottom:2px solid var(--teal-deep);transition:box-shadow 0.2s ease;">
+  <div style="max-width:1200px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;gap:24px;">
+    <a href="/" style="text-decoration:none;display:inline-flex;align-items:center;">
+      <svg viewBox="0 0 182 46" width="182" height="46" xmlns="http://www.w3.org/2000/svg">
+        <text x="0" y="30" font-family="'Outfit',sans-serif" font-weight="700" font-size="27" fill="#0F292F" letter-spacing="-0.5">Klima</text>
+        <circle cx="75" cy="13" r="4" stroke="#FF6B35" stroke-width="1.8" fill="none"/>
+        <text x="82" y="30" font-family="'Outfit',sans-serif" font-weight="300" font-size="27" fill="#C2CCCD" letter-spacing="-0.5">Flow</text>
+        <text x="0" y="44" font-family="'Space Grotesk',sans-serif" font-weight="600" font-size="8.5" fill="#546E7A" textLength="182" lengthAdjust="spacing">KLIMATIZACE NA PŘEDPLATNÉ</text>
+      </svg>
+    </a>
+    <div style="display:flex;align-items:center;gap:32px;">
+      <a href="/#jak-to-funguje" class="nav-link">Jak to funguje</a>
+      <a href="/#pro-koho" class="nav-link">Pro koho</a>
+      <a href="/blog" class="nav-link" style="color:var(--teal-deep);">Blog</a>
+    </div>
+    <a href="/#kontakt" class="btn-primary" style="padding:10px 20px;font-size:13px;">
+      Nezávazná poptávka
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- BLOG HERO -->
+<section style="background:var(--teal-deep);padding:80px 24px 100px;position:relative;overflow:hidden;" class="grid-texture-dark">
+  <div style="position:absolute;top:-120px;right:-120px;width:500px;height:500px;background:radial-gradient(circle,rgba(20,160,152,0.15) 0%,transparent 70%);pointer-events:none;"></div>
+  <div style="position:absolute;bottom:-80px;left:-80px;width:360px;height:360px;background:radial-gradient(circle,rgba(255,107,53,0.1) 0%,transparent 70%);pointer-events:none;"></div>
+  <div style="max-width:1200px;margin:0 auto;position:relative;z-index:2;">
+    <!-- Breadcrumb -->
+    <nav aria-label="Breadcrumb" style="margin-bottom:32px;">
+      <ol style="display:flex;align-items:center;gap:8px;list-style:none;margin:0;padding:0;">
+        <li><a href="/" style="color:rgba(255,255,255,0.5);font-size:13px;text-decoration:none;font-family:'Space Grotesk',sans-serif;transition:color 0.15s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Hlavní stránka</a></li>
+        <li style="color:rgba(255,255,255,0.25);font-size:13px;">/</li>
+        <li style="color:rgba(255,255,255,0.8);font-size:13px;font-family:'Space Grotesk',sans-serif;">Blog</li>
+      </ol>
+    </nav>
+    <span class="section-label" style="color:var(--teal-bright);margin-bottom:20px;display:flex;">Znalosti & Průvodci</span>
+    <h1 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(36px,5vw,64px);color:white;line-height:1.1;letter-spacing:-0.03em;margin-bottom:20px;max-width:700px;">
+      Blog o klimatizaci<br/><span style="color:var(--orange);">jako předplatném.</span>
+    </h1>
+    <p style="color:rgba(255,255,255,0.7);font-size:18px;line-height:1.75;max-width:560px;">
+      Praktické průvodce pro SVJ, bytová družstva, developery a správce budov.
+      Jak ušetřit, jak se rozhodnout, jak to celé funguje.
+    </p>
+  </div>
+</section>
+
+<!-- BLOG GRID -->
+<section style="padding:80px 24px 120px;background:var(--bg);">
+  <div style="max-width:1200px;margin:0 auto;">
+
+    {posts.length === 0 ? (
+      <!-- Empty state -->
+      <div style="text-align:center;padding:80px 24px;background:white;border:2px solid var(--border);border-radius:2px;">
+        <div style="width:64px;height:64px;background:var(--bg);border:2px solid var(--teal-deep);border-radius:2px;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--teal-bright)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
+        <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:24px;color:var(--teal-deep);margin-bottom:12px;">Články brzy přibydou</h2>
+        <p style="color:var(--slate);font-size:16px;max-width:400px;margin:0 auto 32px;">První příspěvky na blogu jsou připraveny — přidejte je přes Keystatic admin panel.</p>
+        <a href="/keystatic" class="btn-primary">Otevřít CMS admin</a>
+      </div>
+    ) : (
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:32px;">
+        {posts.map((post, i) => (
+          <article style={`
+            background:white;
+            border:2px solid var(--teal-deep);
+            border-radius:2px;
+            box-shadow:var(--shadow-hard);
+            overflow:hidden;
+            transition:transform 0.15s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.15s ease;
+            display:flex;flex-direction:column;
+          `}
+          onmouseover="this.style.transform='translate(-3px,-3px)';this.style.boxShadow='7px 7px 0 #0F292F'"
+          onmouseout="this.style.transform='';this.style.boxShadow='4px 4px 0 #0F292F'">
+            <!-- Cover image -->
+            {post.data.coverImage ? (
+              <a href={`/blog/${post.slug}`} style="display:block;overflow:hidden;">
+                <img
+                  src={post.data.coverImage}
+                  alt={post.data.title}
+                  style="width:100%;height:220px;object-fit:cover;display:block;transition:transform 0.3s ease;"
+                  loading="lazy"
+                />
+              </a>
+            ) : (
+              <a href={`/blog/${post.slug}`} style="display:block;height:140px;background:var(--teal-deep);position:relative;overflow:hidden;">
+                <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px);background-size:30px 30px;"></div>
+                <div style="position:absolute;bottom:16px;left:20px;">
+                  <span class="tag" style={`color:var(--orange);border-color:var(--orange);`}>{CATEGORY_LABELS[post.data.category] || post.data.category}</span>
+                </div>
+              </a>
+            )}
+
+            <!-- Content -->
+            <div style="padding:28px;flex:1;display:flex;flex-direction:column;">
+              <!-- Meta -->
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
+                <span class="tag" style="color:var(--teal-bright);border-color:var(--teal-bright);font-size:10px;">
+                  {CATEGORY_LABELS[post.data.category] || post.data.category}
+                </span>
+                <span style="color:var(--slate);font-size:12px;font-family:'Space Grotesk',sans-serif;">
+                  {formatDate(post.data.publishDate)}
+                </span>
+              </div>
+
+              <!-- Title -->
+              <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:19px;line-height:1.3;color:var(--teal-deep);margin-bottom:10px;letter-spacing:-0.01em;">
+                <a href={`/blog/${post.slug}`} style="text-decoration:none;color:inherit;transition:color 0.15s;"
+                   onmouseover="this.style.color='var(--orange)'" onmouseout="this.style.color='inherit'">
+                  {post.data.title}
+                </a>
+              </h2>
+
+              <!-- Description -->
+              <p style="color:var(--slate);font-size:14px;line-height:1.65;flex:1;margin-bottom:20px;">
+                {post.data.description}
+              </p>
+
+              <!-- Footer -->
+              <div style="display:flex;align-items:center;justify-content:space-between;padding-top:16px;border-top:1.5px solid var(--border);">
+                <span style="color:var(--slate);font-size:12px;">{post.data.author}</span>
+                <a href={`/blog/${post.slug}`} style="display:inline-flex;align-items:center;gap:6px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12px;letter-spacing:0.5px;text-transform:uppercase;color:var(--teal-bright);text-decoration:none;transition:color 0.15s;"
+                   onmouseover="this.style.color='var(--orange)'" onmouseout="this.style.color='var(--teal-bright)'">
+                  Číst dál
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    )}
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:var(--teal-deep);border-top:2px solid rgba(255,255,255,0.1);padding:60px 24px 40px;" class="grid-texture-dark">
+  <div style="max-width:1200px;margin:0 auto;">
+    <div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+      <a href="/" style="text-decoration:none;display:inline-flex;align-items:center;">
+        <svg viewBox="0 0 182 46" width="140" height="36" xmlns="http://www.w3.org/2000/svg">
+          <text x="0" y="30" font-family="'Outfit',sans-serif" font-weight="700" font-size="27" fill="#ffffff" letter-spacing="-0.5">Klima</text>
+          <circle cx="75" cy="13" r="4" stroke="#FF6B35" stroke-width="1.8" fill="none"/>
+          <text x="82" y="30" font-family="'Outfit',sans-serif" font-weight="300" font-size="27" fill="rgba(255,255,255,0.35)" letter-spacing="-0.5">Flow</text>
+        </svg>
+      </a>
+      <div style="display:flex;gap:20px;align-items:center;">
+        <a href="/blog" style="color:rgba(255,255,255,0.5);font-size:13px;text-decoration:none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Blog</a>
+        <a href="/#kontakt" style="color:rgba(255,255,255,0.5);font-size:13px;text-decoration:none;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Kontakt</a>
+        <span style="color:rgba(255,255,255,0.3);font-size:13px;">© 2026 KlimaFlow s.r.o.</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  window.addEventListener('scroll', () => {
+    const nav = document.getElementById('navbar');
+    if (nav) nav.style.boxShadow = window.scrollY > 10 ? '0 2px 0 var(--teal-deep)' : 'none';
+  });
+</script>
+
+</BaseLayout>
