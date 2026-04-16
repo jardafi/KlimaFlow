@@ -23,8 +23,10 @@ function formatDate(date: Date): string {
   });
 }
 
-function readingTime(slug: string): string {
-  return '5 min čtení';
+function readingTime(body: string): string {
+  const words = body.trim().split(/\s+/).length;
+  const minutes = Math.ceil(words / 200);
+  return `${minutes} min čtení`;
 }
 ---
 
@@ -160,6 +162,9 @@ function readingTime(slug: string): string {
                 </span>
                 <span style="color:var(--slate);font-size:12px;font-family:'Space Grotesk',sans-serif;">
                   {formatDate(post.data.publishDate)}
+                </span>
+                <span style="color:var(--slate);font-size:12px;font-family:'Space Grotesk',sans-serif;opacity:0.6;">
+                  {readingTime(post.body)}
                 </span>
               </div>
 

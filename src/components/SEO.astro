@@ -53,7 +53,7 @@ const orgSchema = {
   ],
 };
 
-// JSON-LD: WebSite (on homepage)
+// JSON-LD: WebSite (on homepage only)
 const websiteSchema = type === 'website' && canonicalUrl === `${SITE_URL}/` ? {
   '@context': 'https://schema.org',
   '@type': 'WebSite',

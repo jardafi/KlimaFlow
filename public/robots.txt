@@ -4,4 +4,4 @@ Allow: /
 # Block Keystatic admin panel from indexing
 Disallow: /keystatic
 
-Sitemap: https://klimaflow.cz/sitemap-index.xml
+Sitemap: https://klimaflow.cz/sitemap.xml
