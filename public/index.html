@@ -670,9 +670,9 @@
       #nav-cta-desktop { display: none !important; }
       #hamburger { display: flex !important; }
       /* About section stacks on mobile */
-      #about-section { grid-template-columns: 1fr !important; }
-      #about-photo { min-height: 320px !important; }
-      #about-text { padding: 48px 32px !important; }
+      #about-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+      #about-photo { padding-bottom: 40px !important; }
+      #about-text { padding: 0 !important; }
       /* Hero stacks */
       #hero-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
       /* Segment cards: 1 col on mobile */
@@ -863,10 +863,9 @@
       </div>
 
       <!-- Right: Hero photo with airflow animation -->
-      <!-- ★ Save your photo as ./img/hero-room.jpg — the onerror fallback is for development only ★ -->
       <div id="hero-photo-wrap" class="animate-fade-up delay-200" style="position:relative; border-radius:2px; overflow:hidden; box-shadow:8px 8px 0 var(--teal-deep); border:2px solid var(--teal-deep);">
         <img
-          src="./brand_assets/hero.png"
+          src="/hero.png"
           alt="Příjemný interiér s klimatizací KlimaFlow"
           style="width:100%; display:block; object-fit:cover; height:clamp(380px,45vw,540px);"
         />
@@ -913,13 +912,12 @@
 ══════════════════════════════ -->
 <section id="about-section" style="padding: 100px 24px; background: var(--surface); border-bottom: 2px solid var(--border);">
   <div style="max-width: 1200px; margin: 0 auto;">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;">
+    <div id="about-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;">
 
       <!-- Left: Photo with brand treatment -->
       <div id="about-photo" style="position:relative;">
         <img
-          src="./brand_assets/hero.png"
-          onerror="this.onerror=null;this.src='https://placehold.co/560x480/0F292F/14A098?text=KlimaFlow'"
+          src="/hero.png"
           alt="Klimatizace bez investice — KlimaFlow"
           style="width:100%;display:block;object-fit:cover;border:2px solid var(--teal-deep);border-radius:2px;box-shadow:8px 8px 0 var(--teal-deep);"
         />

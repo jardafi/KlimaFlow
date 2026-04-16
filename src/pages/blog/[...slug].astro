@@ -79,17 +79,35 @@ const ogImage = post.data.coverImage || '/og-image.png';
         <text x="0" y="44" font-family="'Space Grotesk',sans-serif" font-weight="600" font-size="8.5" fill="#546E7A" textLength="182" lengthAdjust="spacing">KLIMATIZACE NA PŘEDPLATNÉ</text>
       </svg>
     </a>
-    <div style="display:flex;align-items:center;gap:32px;">
+    <div class="desktop-nav" style="display:flex;align-items:center;gap:32px;">
       <a href="/#jak-to-funguje" class="nav-link">Jak to funguje</a>
       <a href="/#pro-koho" class="nav-link">Pro koho</a>
       <a href="/blog" class="nav-link">Blog</a>
     </div>
-    <a href="/#kontakt" class="btn-primary" style="padding:10px 20px;font-size:13px;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <a id="nav-cta-desktop" href="/#kontakt" class="btn-primary" style="padding:10px 20px;font-size:13px;">
+        Nezávazná poptávka
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <button id="hamburger" onclick="toggleMobileMenu()" aria-label="Otevřít menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div id="mobile-menu" style="flex-direction:column;gap:0;position:fixed;top:70px;left:0;right:0;background:white;border-bottom:2px solid var(--teal-deep);z-index:99;padding:8px 0 16px;box-shadow:0 8px 32px rgba(15,41,47,0.12);">
+  <a href="/#jak-to-funguje" class="nav-link" onclick="closeMobileMenu()" style="display:block;padding:14px 24px;font-size:15px;border-bottom:1px solid var(--border);">Jak to funguje</a>
+  <a href="/#pro-koho" class="nav-link" onclick="closeMobileMenu()" style="display:block;padding:14px 24px;font-size:15px;border-bottom:1px solid var(--border);">Pro koho</a>
+  <a href="/blog" class="nav-link" onclick="closeMobileMenu()" style="display:block;padding:14px 24px;font-size:15px;border-bottom:1px solid var(--border);">Blog</a>
+  <div style="padding:16px 24px 0;">
+    <a href="/#kontakt" onclick="closeMobileMenu()" class="btn-primary" style="width:100%;justify-content:center;font-size:14px;">
       Nezávazná poptávka
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </a>
   </div>
-</nav>
+</div>
 
 <!-- ARTICLE HERO -->
 <section style="background:var(--teal-deep);padding:60px 24px 72px;position:relative;overflow:hidden;" class="grid-texture-dark">
@@ -222,6 +240,23 @@ const ogImage = post.data.coverImage || '/og-image.png';
   window.addEventListener('scroll', () => {
     const nav = document.getElementById('navbar');
     if (nav) nav.style.boxShadow = window.scrollY > 10 ? '0 2px 0 var(--teal-deep)' : 'none';
+  });
+  function toggleMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    const hamburger = document.getElementById('hamburger');
+    const isOpen = menu.classList.contains('open');
+    if (isOpen) { closeMobileMenu(); }
+    else { menu.classList.add('open'); hamburger.classList.add('open'); hamburger.setAttribute('aria-expanded','true'); document.body.style.overflow='hidden'; }
+  }
+  function closeMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    const hamburger = document.getElementById('hamburger');
+    menu.classList.remove('open'); hamburger.classList.remove('open'); hamburger.setAttribute('aria-expanded','false'); document.body.style.overflow='';
+  }
+  document.addEventListener('click', (e) => {
+    const menu = document.getElementById('mobile-menu');
+    const hamburger = document.getElementById('hamburger');
+    if (menu && menu.classList.contains('open') && !menu.contains(e.target) && !hamburger.contains(e.target)) closeMobileMenu();
   });
 </script>
 
