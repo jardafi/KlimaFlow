@@ -35,6 +35,20 @@
     <priority>0.9</priority>
   </url>
 
+  <!-- Legal pages -->
+  <url>
+    <loc>https://klimaflow.cz/ochrana-osobnich-udaju</loc>
+    <lastmod>2026-04-17</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://klimaflow.cz/obchodni-podminky</loc>
+    <lastmod>2026-04-17</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
   <!-- Blog index -->
   <url>
     <loc>https://klimaflow.cz/blog</loc>
