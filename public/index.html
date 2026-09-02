@@ -1524,20 +1524,17 @@
         <div id="calc-results" style="padding:36px; background:#FAFBFC;">
 
           <!-- Headline changes by segment -->
-          <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--teal-bright);margin-bottom:8px;" id="res-label">Uvolněný cashflow oproti nákupu</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--teal-bright);margin-bottom:8px;" id="res-label">Kapitál, který dnes neinvestujete</div>
 
-          <!-- Big savings number -->
+          <!-- Headline: capital not tied up today -->
           <div id="res-number" style="font-family:'Outfit',sans-serif;font-weight:700;font-size:clamp(36px,4vw,56px);letter-spacing:-0.04em;color:var(--orange);line-height:1;margin-bottom:6px;">—</div>
           <div id="res-sub" style="font-size:13px;color:var(--slate);margin-bottom:24px;line-height:1.5;"></div>
-
-          <!-- Warning message (when KlimaFlow > purchase) -->
-          <div id="res-warning" style="display:none; padding:14px 18px; background:#FFF8F5; border:2px solid var(--orange); border-radius:2px; font-size:14px; color:var(--teal-deep); line-height:1.6; margin-bottom:20px;"></div>
 
           <!-- Visual comparison bars with values -->
           <div id="comparison-bar" style="margin-bottom:24px;">
             <div style="margin-bottom:10px;">
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-                <span style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;color:var(--teal-deep);" id="lbl-bar-kf">KlimaFlow celkem</span>
+                <span style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;color:var(--teal-deep);" id="lbl-bar-kf">KlimaFlow — investice dnes</span>
                 <span style="font-family:'Outfit',sans-serif;font-weight:700;font-size:15px;color:var(--teal-deep);" id="val-kf-total">—</span>
               </div>
               <div style="height:10px;background:var(--bg);border:1.5px solid var(--border);border-radius:2px;overflow:hidden;">
@@ -1546,7 +1543,7 @@
             </div>
             <div>
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-                <span style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;color:var(--slate);" id="lbl-bar-buy">Nákup + instalace celkem</span>
+                <span style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;color:var(--slate);" id="lbl-bar-buy">Nákup — investice dnes</span>
                 <span style="font-family:'Outfit',sans-serif;font-weight:700;font-size:15px;color:var(--slate);" id="val-purchase">—</span>
               </div>
               <div style="height:10px;background:var(--bg);border:1.5px solid var(--border);border-radius:2px;overflow:hidden;">
@@ -1566,6 +1563,9 @@
               <div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:18px;color:var(--teal-deep);" id="val-setup">—</div>
             </div>
           </div>
+
+          <!-- Full subscription cost, stated plainly -->
+          <p id="calc-total-note" style="font-size:12px;color:var(--slate);line-height:1.6;margin:-8px 0 20px;"></p>
 
           <!-- Included services tags -->
           <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;" id="services-tags"></div>
@@ -2014,13 +2014,13 @@
       contract: 'Délka smlouvy',
       yr3: 'roky', yr5: 'let',
       warnMin: 'Minimum je 5 jednotek — pro menší projekty nás prosím kontaktujte.',
-      labelDev: 'Uvolněný cashflow oproti nákupu',
-      labelSvj: 'Vaše úspory oproti nákupu',
-      subDev: 'Kapitál, který nemusíte investovat do nákupu zařízení.',
-      subSvj: 'Celková úspora za dobu smlouvy oproti přímému nákupu.',
-      warnNeg: 'Při kratší smlouvě se nákup může vyplatit — domluvte si konzultaci.',
-      m1: 'Měsíční splátka', m2: 'Celková cena nákupu', m3: 'Instalační poplatek',
-      barKF: 'KlimaFlow celkem', barBuy: 'Nákup celkem',
+      labelDev: 'Kapitál, který dnes neinvestujete',
+      labelSvj: 'Kolik nemusíte vybrat z fondu oprav',
+      subDev: 'Pořizovací cena zařízení, kterou nemusíte vázat do majetku. Dnes platíte jen instalační poplatek.',
+      subSvj: 'Bez velké jednorázové investice — nemusíte čerpat fond oprav ani schvalovat úvěr na shromáždění.',
+      m1: 'Měsíční splátka', m2: 'Celkem za', m3: 'Instalační poplatek',
+      barKF: 'KlimaFlow — investice dnes', barBuy: 'Nákup — investice dnes',
+      totalNote: (years, yearWord, amount) => 'Celkem za ' + years + ' ' + yearWord + ' předplatného: ' + amount + ' — včetně instalace, servisu, oprav i výměny při poruše.',
       services: ['Instalace','Servis & údržba','Opravy','Výměna při poruše','Podpora 24/7'],
       cta: 'Domluvit hovor — získat nabídku',
       note: 'Nezávazná konzultace. Odpovíme do 24 hodin.',
@@ -2036,13 +2036,13 @@
       contract: 'Contract length',
       yr3: 'years', yr5: 'years',
       warnMin: 'Minimum is 5 units — please contact us for smaller projects.',
-      labelDev: 'Cashflow freed up vs. buying',
-      labelSvj: 'Your savings vs. buying',
-      subDev: 'Capital you don\'t need to invest upfront in hardware.',
-      subSvj: 'Total savings over the contract term vs. outright purchase.',
-      warnNeg: 'For a short contract, buying may be cheaper — book a consultation.',
-      m1: 'Monthly fee', m2: 'Total purchase cost', m3: 'Setup fee',
-      barKF: 'KlimaFlow total', barBuy: 'Purchase total',
+      labelDev: 'Capital you don\'t invest today',
+      labelSvj: 'What you don\'t draw from the reserve fund',
+      subDev: 'The hardware cost you never tie up. Today you pay only the setup fee.',
+      subSvj: 'No large one-off outlay — no drawdown from the reserve fund, no owners\' vote on a loan.',
+      m1: 'Monthly fee', m2: 'Total over', m3: 'Setup fee',
+      barKF: 'KlimaFlow — upfront', barBuy: 'Buying — upfront',
+      totalNote: (years, yearWord, amount) => 'Total over ' + years + ' ' + yearWord + ' of subscription: ' + amount + ' — installation, service, repairs and replacement included.',
       services: ['Installation','Service & maintenance','Repairs','Replacement on failure','24/7 support'],
       cta: 'Book a call — get a quote',
       note: 'No commitment. We reply within 24 hours.',
@@ -2076,8 +2076,13 @@
     const setup = totalUnits * CFG.SETUP_EUR;
     const kfTotal = monthly * months + setup;
     const purchaseTotal = totalUnits * CFG.PURCHASE_EUR;
-    const savings = purchaseTotal - kfTotal;
-    return { monthly, totalUnits, setup, kfTotal, purchaseTotal, savings };
+    // Day-one outlay, compared like for like: buying means hardware + install,
+    // KlimaFlow means the install fee alone. The difference is the hardware cost
+    // the customer never ties up — which is the actual promise of the product.
+    const upfrontBuy = purchaseTotal + setup;
+    const upfrontKF = setup;
+    const capitalAvoided = upfrontBuy - upfrontKF;
+    return { monthly, totalUnits, setup, kfTotal, purchaseTotal, upfrontBuy, upfrontKF, capitalAvoided };
   }
 
   function fmt(eur) { return T[calcState.lang].curr(eur); }
@@ -2087,7 +2092,7 @@
     const t = T[lang];
     const { s, l } = getValues();
     const totalUnits = s + l;
-    const { monthly, setup, kfTotal, purchaseTotal, savings } = computeCalc(s, l, contract, lang);
+    const { monthly, setup, kfTotal, upfrontBuy, upfrontKF, capitalAvoided } = computeCalc(s, l, contract, lang);
 
     // Labels
     document.getElementById('lbl-inputs').textContent = t.inputs;
@@ -2132,43 +2137,32 @@
     const hintEl = document.getElementById('hint-empty');
     if (hintEl) hintEl.style.display = totalUnits === 0 ? 'block' : 'none';
 
-    // Empty state
+    const totalNoteEl = document.getElementById('calc-total-note');
     if (totalUnits === 0) {
       document.getElementById('res-number').textContent = '—';
       document.getElementById('res-sub').textContent = '';
-      document.getElementById('res-warning').style.display = 'none';
       document.getElementById('val-monthly').textContent = '—';
       document.getElementById('val-setup').textContent = '—';
       document.getElementById('val-kf-total').textContent = '—';
       document.getElementById('val-purchase').textContent = '—';
       document.getElementById('bar-kf').style.width = '0%';
       document.getElementById('bar-buy').style.width = '0%';
-    } else if (savings < 0) {
-      document.getElementById('res-number').style.color = 'var(--slate)';
-      document.getElementById('res-number').textContent = '↓';
-      document.getElementById('res-sub').textContent = '';
-      const warn = document.getElementById('res-warning');
-      warn.style.display = 'block';
-      warn.textContent = t.warnNeg;
-      document.getElementById('val-monthly').textContent = fmt(monthly);
-      document.getElementById('val-setup').textContent = fmt(setup);
-      document.getElementById('val-kf-total').textContent = fmt(kfTotal);
-      document.getElementById('val-purchase').textContent = fmt(purchaseTotal + setup);
-      const maxVal = Math.max(kfTotal, purchaseTotal + setup);
-      document.getElementById('bar-kf').style.width = (kfTotal / maxVal * 96) + '%';
-      document.getElementById('bar-buy').style.width = ((purchaseTotal + setup) / maxVal * 96) + '%';
+      totalNoteEl.textContent = '';
     } else {
       document.getElementById('res-number').style.color = 'var(--orange)';
-      document.getElementById('res-number').textContent = fmt(savings);
+      document.getElementById('res-number').textContent = fmt(capitalAvoided);
       document.getElementById('res-sub').textContent = segment === 'developer' ? t.subDev : t.subSvj;
-      document.getElementById('res-warning').style.display = 'none';
       document.getElementById('val-monthly').textContent = fmt(monthly);
       document.getElementById('val-setup').textContent = fmt(setup);
-      document.getElementById('val-kf-total').textContent = fmt(kfTotal);
-      document.getElementById('val-purchase').textContent = fmt(purchaseTotal + setup);
-      const maxVal = Math.max(kfTotal, purchaseTotal + setup);
-      document.getElementById('bar-kf').style.width = (kfTotal / maxVal * 96) + '%';
-      document.getElementById('bar-buy').style.width = ((purchaseTotal + setup) / maxVal * 96) + '%';
+      // Bars compare day-one outlay, the one comparison that is like for like.
+      document.getElementById('val-kf-total').textContent = fmt(upfrontKF);
+      document.getElementById('val-purchase').textContent = fmt(upfrontBuy);
+      const maxVal = Math.max(upfrontKF, upfrontBuy);
+      document.getElementById('bar-kf').style.width = Math.max(upfrontKF / maxVal * 96, 1.5) + '%';
+      document.getElementById('bar-buy').style.width = '96%';
+      // State the full cost of the subscription too — the headline is about
+      // capital timing, not about the subscription being cheaper overall.
+      totalNoteEl.textContent = t.totalNote(contract, contract === 5 ? t.yr5 : t.yr3, fmt(kfTotal));
     }
 
     // Services tags
