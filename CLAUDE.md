@@ -70,3 +70,7 @@
 ### Never do without explicit confirmation
 - `git push`
 - Any action that triggers a Vercel deployment
+
+### SEO
+- use the best seo practices when publsoihing new page 
+- when you create new page or change technical seo on a page / add element, auto generate the site map and share the link with me after you deploy 

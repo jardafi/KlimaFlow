@@ -2,3 +2,11 @@
 temporary screenshots/
 .claude/
 node_modules/
+.vercel
+
+# Astro build cache (regenerated on every dev/build run)
+.astro/
+
+# Internal only — contains the 5-year P&L, unit economics and a legacy
+# admin password. This repo is public; do not commit.
+KlimaFlow_Project_Context.md
