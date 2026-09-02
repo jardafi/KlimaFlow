@@ -11,4 +11,12 @@ export default defineConfig({
     mdx(),
     keystatic(),
   ],
+  // The segment pages moved from /x.html to /x/ so they resolve at the URL their
+  // canonical tag and the sitemap already advertised. Keep the old paths alive.
+  redirects: {
+    '/svj.html': { status: 301, destination: '/svj' },
+    '/bytova-druzstva.html': { status: 301, destination: '/bytova-druzstva' },
+    '/developeri.html': { status: 301, destination: '/developeri' },
+    '/kancelare.html': { status: 301, destination: '/kancelare' },
+  },
 });

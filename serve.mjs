@@ -4,7 +4,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const PORT = 3000;
+const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+// The site's static files live in public/ (Astro convention).
+const ROOT = path.join(__dirname, 'public');
 
 const MIME = {
   '.html': 'text/html',
@@ -26,7 +28,9 @@ const server = http.createServer((req, res) => {
   let urlPath = req.url.split('?')[0];
   if (urlPath === '/') urlPath = '/index.html';
 
-  const filePath = path.join(__dirname, urlPath);
+  let filePath = path.join(ROOT, urlPath);
+  // Support extensionless URLs like /obchodni-podminky -> /obchodni-podminky/index.html
+  if (!path.extname(filePath)) filePath = path.join(filePath, 'index.html');
   const ext = path.extname(filePath).toLowerCase();
   const contentType = MIME[ext] || 'application/octet-stream';
 

@@ -2,6 +2,9 @@
 <html lang="cs">
 <head>
   <meta charset="UTF-8" />
+  <!-- Scroll-reveal hides content until JS unhides it. Gate that on JS being alive,
+       so a blocked/failed script can never leave the page blank. -->
+  <script>document.documentElement.className += " js-reveal";</script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KlimaFlow — Klimatizace jako předplatné pro SVJ, bytová družstva a kanceláře</title>
   <meta name="description" content="Klimatizace jako měsíční předplatné — nulová investice, instalace, servis a opravy v ceně. Pro SVJ, bytová družstva, developery a kanceláře v ČR a SR." />
@@ -140,10 +143,10 @@
   }
   </script>
 
+  <link rel="preload" as="image" href="/hero.webp" type="image/webp" fetchpriority="high" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;700&family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
   <style>
     :root {
       --orange:  #FF6B35;
@@ -616,14 +619,23 @@
     }
 
     /* ─── SCROLL REVEAL ─── */
-    .reveal {
+    .js-reveal .reveal {
       opacity: 0;
       transform: translateY(20px);
       transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22,1,0.36,1);
     }
-    .reveal.visible {
+    .js-reveal .reveal.visible {
       opacity: 1;
       transform: translateY(0);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .js-reveal .reveal,
+      .js-reveal .animate-fade-up {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+        animation: none !important;
+      }
     }
     .reveal-delay-1 { transition-delay: 0.1s; }
     .reveal-delay-2 { transition-delay: 0.2s; }
@@ -631,7 +643,7 @@
     .reveal-delay-4 { transition-delay: 0.4s; }
 
     /* ─── INPUT ─── */
-    input[type="text"], input[type="email"], select, textarea {
+    input[type="text"], input[type="email"], input[type="tel"], select, textarea {
       font-family: 'DM Sans', sans-serif;
       font-size: 15px;
       padding: 12px 16px;
@@ -643,8 +655,20 @@
       outline: none;
       transition: box-shadow 0.15s ease;
     }
-    input[type="text"]:focus, input[type="email"]:focus, select:focus, textarea:focus {
+    input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus, select:focus, textarea:focus {
       box-shadow: 3px 3px 0px var(--teal-bright);
+    }
+    /* Custom dropdown arrow. Lives here, not in a style attribute — the data URI
+       needs quotes that HTML attributes can't carry. */
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      padding-right: 40px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230F292F' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px;
     }
 
     /* ─── ORANGE ACCENT LINE ─── */
@@ -739,6 +763,12 @@
       #steps-grid { grid-template-columns: 1fr !important; }
       /* Contact: 1 col */
       #contact-grid { grid-template-columns: 1fr !important; gap: 48px !important; }
+      /* Contact form: name + phone stack, they're too narrow side by side */
+      #form-name-row { grid-template-columns: 1fr !important; }
+      /* Calculator: 1 col */
+      #calc-grid { grid-template-columns: 1fr !important; }
+      #calc-inputs { border-right: none !important; border-bottom: 2px solid var(--border) !important; padding: 28px !important; }
+      #calc-results { padding: 28px !important; }
       /* Footer: 2 col */
       #footer-grid { grid-template-columns: 1fr 1fr !important; gap: 32px !important; }
     }
@@ -901,6 +931,10 @@
         <div class="animate-fade-up delay-400" style="display: flex; flex-wrap: wrap; gap: 24px;">
           <div style="display: flex; align-items: center; gap: 8px; color: var(--slate); font-size: 13px;">
             <div style="width: 6px; height: 6px; background: var(--teal-bright); border-radius: 50%;"></div>
+            <span data-i18n="trust_1">Bez vstupní investice</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; color: var(--slate); font-size: 13px;">
+            <div style="width: 6px; height: 6px; background: var(--teal-bright); border-radius: 50%;"></div>
             <span data-i18n="trust_2">Servis &amp; údržba v ceně</span>
           </div>
           <div style="display: flex; align-items: center; gap: 8px; color: var(--slate); font-size: 13px;">
@@ -912,11 +946,16 @@
 
       <!-- Right: Hero photo with airflow animation -->
       <div id="hero-photo-wrap" class="animate-fade-up delay-200" style="position:relative; border-radius:2px; overflow:hidden; box-shadow:8px 8px 0 var(--teal-deep); border:2px solid var(--teal-deep);">
-        <img
-          src="/hero.png"
-          alt="Příjemný interiér s klimatizací KlimaFlow"
-          style="width:100%; display:block; object-fit:cover; height:clamp(380px,45vw,540px);"
-        />
+        <picture>
+          <source srcset="/hero.webp" type="image/webp" />
+          <img
+            src="/hero.jpg"
+            alt="Příjemný interiér s klimatizací KlimaFlow"
+            width="899" height="539"
+            fetchpriority="high" decoding="async"
+            style="width:100%; display:block; object-fit:cover; height:clamp(380px,45vw,540px);"
+          />
+        </picture>
         <!-- Subtle gradient overlay at bottom for text legibility -->
         <div style="position:absolute;bottom:0;left:0;right:0;height:120px;background:linear-gradient(to top,rgba(15,41,47,0.18),transparent);pointer-events:none;"></div>
       </div>
@@ -964,11 +1003,16 @@
 
       <!-- Left: Photo with brand treatment -->
       <div id="about-photo" style="position:relative;">
-        <img
-          src="/hero.png"
-          alt="Klimatizace bez investice — KlimaFlow"
-          style="width:100%;display:block;object-fit:cover;border:2px solid var(--teal-deep);border-radius:2px;box-shadow:8px 8px 0 var(--teal-deep);"
-        />
+        <picture>
+          <source srcset="/hero.webp" type="image/webp" />
+          <img
+            src="/hero.jpg"
+            alt="Klimatizace bez investice — KlimaFlow"
+            width="899" height="539"
+            fetchpriority="high" decoding="async"
+            style="width:100%;display:block;object-fit:cover;border:2px solid var(--teal-deep);border-radius:2px;box-shadow:8px 8px 0 var(--teal-deep);"
+          />
+        </picture>
         <!-- Teal accent bar left -->
         <div style="position:absolute;top:16px;left:-12px;width:4px;height:60%;background:var(--teal-bright);"></div>
         <!-- Stats chip -->
@@ -1171,7 +1215,7 @@
     <div id="segments-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
 
       <!-- SVJ -->
-      <a href="svj.html" class="seg-card reveal" style="
+      <a href="/svj" class="seg-card reveal" style="
         display:block; text-decoration:none; color:inherit;
         background: white; border: 2px solid var(--teal-deep);
         border-radius: 2px; box-shadow: 4px 4px 0px var(--teal-deep);
@@ -1206,7 +1250,7 @@
       </a>
 
       <!-- Bytová Družstva -->
-      <a href="bytova-druzstva.html" class="seg-card reveal reveal-delay-1" style="
+      <a href="/bytova-druzstva" class="seg-card reveal reveal-delay-1" style="
         display:block; text-decoration:none; color:inherit;
         background: white; border: 2px solid var(--teal-deep);
         border-radius: 2px; box-shadow: 4px 4px 0px var(--teal-deep);
@@ -1241,7 +1285,7 @@
       </a>
 
       <!-- Developeři -->
-      <a href="developeri.html" class="seg-card reveal reveal-delay-2" style="
+      <a href="/developeri" class="seg-card reveal reveal-delay-2" style="
         display:block; text-decoration:none; color:inherit;
         background: white; border: 2px solid var(--teal-deep);
         border-radius: 2px; box-shadow: 4px 4px 0px var(--teal-deep);
@@ -1263,7 +1307,7 @@
           </div>
         </div>
         <p style="color:var(--slate);font-size:14px;line-height:1.7;margin-bottom:20px;">
-          Nabídněte budoucím vlastníkům klimatizaci jako součást vybavení. Clima přebírá odpovědnost od kolaudace.
+          Nabídněte budoucím vlastníkům klimatizaci jako součást vybavení. KlimaFlow přebírá odpovědnost od kolaudace.
         </p>
         <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;">
           <div class="check-item" style="color:var(--teal-deep);font-size:13px;">Klimatizace jako prodejní argument</div>
@@ -1276,7 +1320,7 @@
       </a>
 
       <!-- Kanceláře -->
-      <a href="kancelare.html" class="seg-card reveal reveal-delay-3" style="
+      <a href="/kancelare" class="seg-card reveal reveal-delay-3" style="
         display:block; text-decoration:none; color:inherit;
         background: white; border: 2px solid var(--teal-deep);
         border-radius: 2px; box-shadow: 4px 4px 0px var(--teal-deep);
@@ -1421,10 +1465,10 @@
         </div>
       </div>
 
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0;">
+      <div id="calc-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:0;">
 
         <!-- LEFT: Inputs -->
-        <div style="padding:36px; border-right:2px solid var(--border);">
+        <div id="calc-inputs" style="padding:36px; border-right:2px solid var(--border);">
           <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--slate);margin-bottom:28px;" id="lbl-inputs">Parametry projektu</div>
 
           <!-- Small units -->
@@ -1436,7 +1480,7 @@
             <input type="range" id="sld-small" min="0" max="50" value="0" oninput="sliderUpdate('small')" style="width:100%;height:6px;accent-color:var(--teal-bright);cursor:pointer;margin-bottom:6px;" />
             <div style="display:flex;justify-content:space-between;">
               <span style="font-size:11px;color:var(--slate);">0</span>
-              <span style="font-size:11px;color:var(--slate);" id="lbl-unit-price-small">35 €/měs za kus</span>
+              <span style="font-size:11px;color:var(--slate);" id="lbl-unit-price-small">875 Kč/měs za kus</span>
               <span style="font-size:11px;color:var(--slate);">50</span>
             </div>
             <input type="number" id="inp-small" value="0" min="0" max="999" oninput="clampAndUpdate('small')" style="display:none;" />
@@ -1451,7 +1495,7 @@
             <input type="range" id="sld-large" min="0" max="50" value="0" oninput="sliderUpdate('large')" style="width:100%;height:6px;accent-color:var(--teal-bright);cursor:pointer;margin-bottom:6px;" />
             <div style="display:flex;justify-content:space-between;">
               <span style="font-size:11px;color:var(--slate);">0</span>
-              <span style="font-size:11px;color:var(--slate);" id="lbl-unit-price-large">47 €/měs za kus</span>
+              <span style="font-size:11px;color:var(--slate);" id="lbl-unit-price-large">1 175 Kč/měs za kus</span>
               <span style="font-size:11px;color:var(--slate);">50</span>
             </div>
             <input type="number" id="inp-large" value="0" min="0" max="999" oninput="clampAndUpdate('large')" style="display:none;" />
@@ -1472,12 +1516,12 @@
           <!-- Empty state hint -->
           <div id="hint-empty" style="padding:14px 16px; background:rgba(20,160,152,0.06); border:1.5px solid rgba(20,160,152,0.2); border-radius:2px; font-size:13px; color:var(--slate); line-height:1.6;">
             <strong style="color:var(--teal-deep);">Jak kalkulačka funguje:</strong><br/>
-            Zadejte počet klimatizovaných místností nebo bytů pomocí posuvníků výše. Výsledky uvidíte okamžitě vpravo.
+            Zadejte počet klimatizovaných místností nebo bytů pomocí posuvníků výše. Výsledky uvidíte okamžitě.
           </div>
         </div>
 
         <!-- RIGHT: Results -->
-        <div style="padding:36px; background:#FAFBFC;">
+        <div id="calc-results" style="padding:36px; background:#FAFBFC;">
 
           <!-- Headline changes by segment -->
           <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--teal-bright);margin-bottom:8px;" id="res-label">Uvolněný cashflow oproti nákupu</div>
@@ -1600,26 +1644,29 @@
 
       <!-- Right: form -->
       <div class="reveal" style="background: white; border: 2px solid var(--teal-deep); border-radius: 2px; box-shadow: var(--shadow-hard); padding: 40px 36px;">
-        <form id="contact-form" onsubmit="handleSubmit(event)">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+        <form id="contact-form" action="https://formspree.io/f/mdayagbq" method="POST" onsubmit="handleSubmit(event)">
+          <!-- Formspree spam trap: real people never see or fill this. -->
+          <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" />
+          <input type="hidden" name="_subject" value="Nová poptávka z klimaflow.cz" />
+          <div id="form-name-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
             <div>
-              <label style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 600; letter-spacing: 0.3px; color: var(--teal-deep); display: block; margin-bottom: 6px;">Jméno *</label>
-              <input type="text" name="jmeno" placeholder="Jan Novák" required />
+              <label for="f-jmeno" style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 600; letter-spacing: 0.3px; color: var(--teal-deep); display: block; margin-bottom: 6px;">Jméno *</label>
+              <input type="text" id="f-jmeno" name="jmeno" placeholder="Jan Novák" autocomplete="name" required />
             </div>
             <div>
-              <label style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 600; letter-spacing: 0.3px; color: var(--teal-deep); display: block; margin-bottom: 6px;">Telefon *</label>
-              <input type="text" name="telefon" placeholder="+420 292 333 607" required />
+              <label for="f-telefon" style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 600; letter-spacing: 0.3px; color: var(--teal-deep); display: block; margin-bottom: 6px;">Telefon *</label>
+              <input type="tel" id="f-telefon" name="telefon" placeholder="+420 292 333 607" autocomplete="tel" inputmode="tel" required />
             </div>
           </div>
 
           <div style="margin-bottom: 16px;">
-            <label style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 600; letter-spacing: 0.3px; color: var(--teal-deep); display: block; margin-bottom: 6px;">E-mail *</label>
-            <input type="email" name="email" placeholder="jan@firma.cz" required />
+            <label for="f-email" style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 600; letter-spacing: 0.3px; color: var(--teal-deep); display: block; margin-bottom: 6px;">E-mail *</label>
+            <input type="email" id="f-email" name="email" placeholder="jan@firma.cz" autocomplete="email" required />
           </div>
 
           <div style="margin-bottom: 16px;">
-            <label style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 600; letter-spacing: 0.3px; color: var(--teal-deep); display: block; margin-bottom: 6px;">Typ objektu</label>
-            <select name="typ_objektu" style="appearance: none; cursor: pointer; background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230F292F' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; padding-right: 40px;">
+            <label for="typ_objektu" style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 600; letter-spacing: 0.3px; color: var(--teal-deep); display: block; margin-bottom: 6px;">Typ objektu</label>
+            <select name="typ_objektu" id="typ_objektu">
               <option value="">Vyberte typ objektu...</option>
               <option>SVJ – bytový dům</option>
               <option>Bytové družstvo</option>
@@ -1630,8 +1677,8 @@
           </div>
 
           <div style="margin-bottom: 16px;">
-            <label style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 600; letter-spacing: 0.3px; color: var(--teal-deep); display: block; margin-bottom: 6px;">Počet klimatizačních jednotek</label>
-            <select name="pocet_jednotek" style="appearance: none; cursor: pointer; background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230F292F' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; padding-right: 40px;">
+            <label for="pocet_jednotek" style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 600; letter-spacing: 0.3px; color: var(--teal-deep); display: block; margin-bottom: 6px;">Počet klimatizačních jednotek</label>
+            <select name="pocet_jednotek" id="pocet_jednotek">
               <option value="">Počet jednotek...</option>
               <option>5–20 jednotek</option>
               <option>21–50 jednotek</option>
@@ -1641,10 +1688,11 @@
           </div>
 
           <div style="margin-bottom: 24px;">
-            <label style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 600; letter-spacing: 0.3px; color: var(--teal-deep); display: block; margin-bottom: 6px;">Zpráva (nepovinné)</label>
-            <textarea name="zprava" placeholder="Popište váš projekt nebo dotaz..." rows="3" style="resize: vertical; min-height: 80px;"></textarea>
+            <label for="f-zprava" style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 600; letter-spacing: 0.3px; color: var(--teal-deep); display: block; margin-bottom: 6px;">Zpráva (nepovinné)</label>
+            <textarea id="f-zprava" name="zprava" placeholder="Popište váš projekt nebo dotaz..." rows="3" style="resize: vertical; min-height: 80px;"></textarea>
           </div>
 
+          <p id="form-error" role="alert" hidden style="margin-bottom:12px;padding:10px 14px;background:#FFF3EF;border:1.5px solid var(--orange);border-radius:2px;font-size:13px;color:var(--orange-dark);font-weight:600;"></p>
           <button type="submit" id="submit-btn" class="btn-primary" style="width: 100%; justify-content: center; font-size: 15px;">
             Odeslat poptávku
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -1979,7 +2027,8 @@
       cta: 'Domluvit hovor — získat nabídku',
       note: 'Nezávazná konzultace. Odpovíme do 24 hodin.',
       curr: v => Math.round(v * CFG.CZK).toLocaleString('cs-CZ').replace(/\u00a0/g,' ') + ' Kč',
-      unitSmall: '35 €/měs', unitLarge: '47 €/měs'
+      unitSmall: Math.round(CFG.SMALL_EUR * CFG.CZK).toLocaleString('cs-CZ').replace(/\u00a0/g,' ') + ' Kč/měs',
+      unitLarge: Math.round(CFG.LARGE_EUR * CFG.CZK).toLocaleString('cs-CZ').replace(/\u00a0/g,' ') + ' Kč/měs'
     },
     en: {
       segDev: 'Developer / Company', segSvj: 'HOA / Housing Co-op',
@@ -2213,8 +2262,8 @@
         a: 'Spolupracujeme s předními výrobci inverterových jednotek — Mitsubishi Electric, Daikin, LG a Fujitsu. Konkrétní model doporučíme na základě velikosti a dispozic vašeho objektu.'
       },
       {
-        q: 'Funguje Clima i pro Slovensko?',
-        a: 'Ano, Clima poskytuje služby v celé České republice a na Slovensku. Smlouvy a fakturace jsou dostupné v CZK i EUR. Pro slovenské klienty máme síť certifikovaných partnerů.'
+        q: 'Funguje KlimaFlow i pro Slovensko?',
+        a: 'Ano, KlimaFlow poskytuje služby v celé České republice a na Slovensku. Smlouvy a fakturace jsou dostupné v CZK i EUR. Pro slovenské klienty máme síť certifikovaných partnerů.'
       },
       {
         q: 'Co zahrnuje pravidelná údržba?',
@@ -2243,8 +2292,8 @@
         a: 'Spolupracujeme s poprednými výrobcami inverterových jednotiek — Mitsubishi Electric, Daikin, LG a Fujitsu. Konkrétny model odporúčame na základe veľkosti a dispozícií vášho objektu.'
       },
       {
-        q: 'Funguje Clima aj pre Slovensko?',
-        a: 'Áno, Clima poskytuje služby v celej Českej republike a na Slovensku. Zmluvy a fakturácia sú dostupné v CZK aj EUR. Pre slovenských klientov máme sieť certifikovaných partnerov.'
+        q: 'Funguje KlimaFlow aj pre Slovensko?',
+        a: 'Áno, KlimaFlow poskytuje služby v celej Českej republike a na Slovensku. Zmluvy a fakturácia sú dostupné v CZK aj EUR. Pre slovenských klientov máme sieť certifikovaných partnerov.'
       },
       {
         q: 'Čo zahŕňa pravidelná údržba?',
@@ -2296,15 +2345,22 @@
 
   // ─── SCROLL REVEAL ───
   const revealEls = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        observer.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-  revealEls.forEach(el => observer.observe(el));
+  const showAll = () => revealEls.forEach(el => el.classList.add('visible'));
+  if (!('IntersectionObserver' in window)) {
+    showAll();
+  } else {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px 10% 0px' });
+    revealEls.forEach(el => observer.observe(el));
+    // Failsafe: nothing on this page may stay invisible for good.
+    window.addEventListener('load', () => setTimeout(showAll, 3000));
+  }
 
   // ─── MOBILE MENU ───
   function toggleMobileMenu() {
@@ -2347,12 +2403,23 @@
     e.preventDefault();
     const form = document.getElementById('contact-form');
     const btn  = document.getElementById('submit-btn');
+    const err  = document.getElementById('form-error');
+    const label = btn.innerHTML;
 
+    const fail = (msg) => {
+      btn.disabled = false;
+      btn.innerHTML = label;
+      err.textContent = msg;
+      err.hidden = false;
+      err.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    };
+
+    err.hidden = true;
     btn.disabled = true;
     btn.textContent = 'Odesílám...';
 
     try {
-      const res = await fetch('https://formspree.io/f/mdayagbq', {
+      const res = await fetch(form.action, {
         method: 'POST',
         headers: { 'Accept': 'application/json' },
         body: new FormData(form)
@@ -2362,16 +2429,12 @@
         form.style.display = 'none';
         document.getElementById('form-success').style.display = 'block';
       } else {
-        const data = await res.json();
-        const msg = data.errors ? data.errors.map(e => e.message).join(', ') : 'Chyba při odesílání.';
-        btn.disabled = false;
-        btn.innerHTML = 'Odeslat poptávku <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
-        alert('Chyba: ' + msg);
+        const data = await res.json().catch(() => ({}));
+        fail('Chyba: ' + (data.errors ? data.errors.map(x => x.message).join(', ')
+                                      : 'Formulář se nepodařilo odeslat. Napište nám prosím na info@klimaflow.cz.'));
       }
-    } catch (err) {
-      btn.disabled = false;
-      btn.innerHTML = 'Odeslat poptávku <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
-      alert('Nepodařilo se odeslat formulář. Zkuste to prosím znovu.');
+    } catch (err2) {
+      fail('Nepodařilo se odeslat formulář. Zkuste to prosím znovu, nebo nám napište na info@klimaflow.cz.');
     }
   }
 
